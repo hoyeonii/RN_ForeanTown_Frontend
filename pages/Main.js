@@ -8,15 +8,20 @@ import {
   TouchableOpacity,
   SafeAreaView,
   View,
+  Modal,
+  Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
 import { useNavigation } from "@react-navigation/core";
+import FilterModal from "../components/FilterModal";
 
 export default function App() {
   const [data, setData] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const navigation = useNavigation();
 
   const loadData = () =>
@@ -33,7 +38,20 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+      <Header setModalVisible={setModalVisible} />
+      <Modal
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <FilterModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+        />
+      </Modal>
       <View style={styles.banner}>
         <Text>Banner</Text>
       </View>
@@ -68,6 +86,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     borderColor: "red",
   },
+
   banner: {
     backgroundColor: "#8587DC",
     height: 50,

@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 
-function Header() {
+function Header({ setModalVisible }) {
   const category = [
     "베이킹",
     "프로그래밍",
@@ -22,15 +22,21 @@ function Header() {
     "마케팅",
   ];
   return (
-    <SafeAreaView style={styles.container} onPress={() => console.log("irif")}>
-      <TouchableOpacity style={styles.searchWrapper}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => {
+        setModalVisible(true);
+      }}
+    >
+      <View style={styles.searchWrapper}>
         <Icon name="search1" size={20} />
-        <TextInput
+        <Text>Where to?</Text>
+        {/* <TextInput
           style={styles.searchBar}
           placeholder="어떤 수업이 궁금하세요?"
-        />
+        /> */}
         <Icon name="filter" size={20} />
-      </TouchableOpacity>
+      </View>
       <View style={styles.categoryWrapper}>
         {category.map((cat, i) => (
           <Text style={styles.category} key={i}>
@@ -38,7 +44,7 @@ function Header() {
           </Text>
         ))}
       </View>
-    </SafeAreaView>
+    </TouchableOpacity>
   );
 }
 

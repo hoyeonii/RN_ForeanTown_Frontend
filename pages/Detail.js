@@ -8,6 +8,7 @@ import {
   Linking,
   BackHandler,
   ScrollView,
+  Modal,
 } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
