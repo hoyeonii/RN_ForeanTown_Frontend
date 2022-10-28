@@ -1,3 +1,5 @@
+import { PixelRatio } from "react-native";
+
 //https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&facet=host_response_rate&facet=host_verifications&facet=city&facet=property_type&facet=cancellation_policy&facet=features
 const data = {
   datasetid: "airbnb-listings",
@@ -105,3 +107,21 @@ const data = {
   },
   record_timestamp: "2020-07-31T22:00:07.811Z",
 };
+
+export const gather_rooms = [
+  {
+    id: 1,
+    subject: "한독커플",
+    content:
+      "서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!",
+    link_url: "httpsrij:fqreifoieqrf.com",
+    user_limit: 5,
+    male_ratio: 0.666,
+    start_date: "1000-01-01 00:00:00",
+    end_date: "1000-01-02 00:00:00",
+    start_time: "1000-01-01 00:00:00",
+    end_time: "1000-01-02 00:00:00",
+    gather_room_category_id: 2,
+    img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+  },
+];

@@ -6,32 +6,88 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Button,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
+import { useNavigation } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 function Footer() {
+  // 나중에 createBottomTabNavigator로 구현해보기!
+  const navigation = useNavigation();
+  const [user, setUser] = useState(false);
+  useEffect(() => {
+    retrieveData("token");
+  }, []);
+  const retrieveData = async (key) => {
+    console.log("_retrieve data");
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        setUser(true);
+        console.log(value);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeData = async (key) => {
+    console.log("removeData data");
+    try {
+      await AsyncStorage.removeItem(key);
+      console.log("done!!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const readAsyncData = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const result = await AsyncStorage.multiGet(keys);
+      // do something what you need with response
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+      // do something...
+    }
+  };
+
+  function NavTab({ navTo, icon, name }) {
+    return (
+      <TouchableOpacity
+        style={styles.page}
+        onPress={() => navigation.navigate(navTo)}
+      >
+        <Icon name={icon} size={30} color="gray" />
+        <Text style={styles.pageText}>{name}</Text>
+      </TouchableOpacity>
+    );
+  }
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.page}>
-        <Icon name="search1" size={30} color="gray" />
-        <Text style={styles.pageText}>Search</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.page}>
-        <Icon name="hearto" size={30} color="gray" />
-        <Text style={styles.pageText}>Wishlists</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.page}>
-        <Icon name="book" size={30} color="gray" />
-        <Text style={styles.pageText}>Class</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.page}>
-        <Icon name="inbox" size={30} color="gray" />
-        <Text style={styles.pageText}>Inbox</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.page}>
-        <Icon name="user" size={30} color="gray" />
-        <Text style={styles.pageText}>Profile</Text>
-      </TouchableOpacity>
+      <NavTab navTo="Post" icon="plus" name="Post" />
+      <NavTab navTo="Main" icon="home" name="Main" />
+      <NavTab
+        navTo={user ? "MyPage" : "Login"}
+        icon="user"
+        name={user ? "user" : "nonpe"}
+      />
+      <Button
+        title="clear"
+        onPress={() => {
+          removeData("token");
+          setUser(false);
+        }}
+      />
+      <Button
+        title="read"
+        onPress={() => {
+          readAsyncData();
+        }}
+      />
     </View>
   );
 }

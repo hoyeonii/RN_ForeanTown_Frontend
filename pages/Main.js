@@ -34,6 +34,9 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
+      <View style={styles.banner}>
+        <Text>Banner</Text>
+      </View>
       <View style={styles.main}>
         {/* <Text>rif</Text> */}
         <ScrollView>
@@ -64,6 +67,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     // borderWidth: 1,
     borderColor: "red",
+  },
+  banner: {
+    backgroundColor: "#8587DC",
+    height: 50,
   },
   main: {
     flex: 11,

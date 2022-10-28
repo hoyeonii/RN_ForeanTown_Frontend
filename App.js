@@ -9,6 +9,11 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import Main from "./pages/Main";
 import Detail from "./pages/Detail";
+import Login from "./pages/Login";
+import MyPage from "./pages/MyPage";
+import SignUp from "./pages/SignUp.js";
+import Post from "./pages/Post.js";
+
 import { useNavigation } from "@react-navigation/core";
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -28,6 +33,11 @@ export default function App() {
       >
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Detail" component={Detail} />
+        <Stack.Screen name="MyPage" component={MyPage} />
+        <Stack.Screen name="Post" component={Post} />
+
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="SignUp" component={SignUp} />
       </Stack.Navigator>
       <Footer />
     </NavigationContainer>
