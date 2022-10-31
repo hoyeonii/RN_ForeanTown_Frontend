@@ -11,14 +11,16 @@ import {
   TextInput,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Card from "../components/Card";
 import { useNavigation } from "@react-navigation/core";
+import { AuthContext } from "../App";
 
-export default function App() {
+export default function Login() {
   const navigation = useNavigation();
+  const { setUser } = useContext(AuthContext);
   const [input_email_value, set_input_email_value] = useState("");
   const [input_password_value, set_input_password_value] = useState("");
   const [input_password2_value, set_input_password2_value] = useState("");
@@ -27,7 +29,7 @@ export default function App() {
   //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
 
   const do_login = () => {
-    console.log("do login");
+    console.log("do loginn");
     const request_options = {
       method: "POST",
       headers: {
@@ -40,6 +42,7 @@ export default function App() {
         // password: "abcde7812119",
       }),
     };
+    console.log(request_options);
     fetch(`http://10.36.180.173:8000/users/login`, request_options)
       .then((response) => {
         console.log(response.status);
@@ -50,8 +53,11 @@ export default function App() {
             response.json();
       })
       .then((res) => {
+        console.log("로그인 결과");
         console.log(res);
-        console.log("rest");
+
+        storeData("token", res);
+        setUser(res);
         // localStorage.setItem("refresh_token", res.refresh_token);
         // localStorage.setItem("access_token", res.access_token);
         // localStorage.setItem("user_name", res.name + "님 안녕하세요");
@@ -168,7 +174,13 @@ export default function App() {
           }}
         />
       </View>
-      <Button title="storeData" onPress={() => storeData("token", "qwert12")} />
+      <Button
+        title="storeData(현재 로그인버튼)"
+        onPress={() => {
+          storeData("token", "qwert12");
+          setUser("유저네임");
+        }}
+      />
       <Button title="retrieveData" onPress={() => retrieveData("token")} />
     </SafeAreaView>
   );

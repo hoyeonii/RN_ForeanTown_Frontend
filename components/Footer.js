@@ -8,15 +8,16 @@ import {
   TouchableOpacity,
   Button,
 } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../App";
 
 function Footer() {
+  const { user, setUser } = useContext(AuthContext);
   // 나중에 createBottomTabNavigator로 구현해보기!
   const navigation = useNavigation();
-  const [user, setUser] = useState(false);
   useEffect(() => {
     retrieveData("token");
   }, []);
@@ -73,13 +74,14 @@ function Footer() {
       <NavTab
         navTo={user ? "MyPage" : "Login"}
         icon="user"
-        name={user ? "user" : "nonpe"}
+        // name={user ? "user" : "nonpe"}
+        name={user ? user : "로그인"}
       />
       <Button
         title="clear"
         onPress={() => {
           removeData("token");
-          setUser(false);
+          setUser(null);
         }}
       />
       <Button

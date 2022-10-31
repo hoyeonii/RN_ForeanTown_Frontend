@@ -6,53 +6,53 @@ import {
   View,
   SafeAreaView,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import Main from "./pages/Main";
-import Detail from "./pages/Detail";
-import Login from "./pages/Login";
-import MyPage from "./pages/MyPage";
-import SignUp from "./pages/SignUp.js";
-import Post from "./pages/Post.js";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  createContext,
+} from "react";
+import AppNav from "./navigation/AppNav";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { useNavigation } from "@react-navigation/core";
+export const AuthContext = createContext();
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Footer from "./components/Footer";
 export default function App() {
-  const Stack = createNativeStackNavigator();
-  // const navigation = useNavigation();
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({ headerShown: false });
-  // }, []);
-  return (
-    <NavigationContainer style={styles.container}>
-      <Stack.Navigator
-        initialRouteName="Main"
-        screenOptions={{ headerShown: false }}
-      >
-        <Stack.Screen name="Main" component={Main} />
-        <Stack.Screen name="Detail" component={Detail} />
-        <Stack.Screen name="MyPage" component={MyPage} />
-        <Stack.Screen name="Post" component={Post} />
+  const [user, setUser] = useState("ffff");
 
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="SignUp" component={SignUp} />
-      </Stack.Navigator>
-      <Footer />
-    </NavigationContainer>
+  useEffect(() => {
+    retrieveData("token");
+  }, []);
+
+  const retrieveData = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        // We have data!!
+        setUser(value);
+        console.log("logged in" + value);
+      } else {
+        setUser("Log In");
+        console.log("not logged in" + value);
+      }
+    } catch (error) {
+      console.log(error);
+      // Error retrieving data
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, setUser }}>
+      <AppNav />
+    </AuthContext.Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 40,
-    borderWidth: 1,
-    // borderColor: "blue",
-    // marginHorizontal: 5,
-    backgroundColor: "blue",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     marginTop: 40,
+//     borderWidth: 1,
+
+//   },
+// });
