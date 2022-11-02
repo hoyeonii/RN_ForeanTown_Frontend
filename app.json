@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "hobnb",
+    "name": "Hobnb",
     "slug": "hobnb",
+    "description": "this is Hobnb",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +25,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.hoho0301.hobnb"
     },
     "web": {
       "favicon": "./assets/favicon.png"

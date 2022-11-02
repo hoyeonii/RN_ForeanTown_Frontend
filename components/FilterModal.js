@@ -42,19 +42,19 @@ export default function FilterModal({ modalVisible, setModalVisible }) {
         </View>
         <ScrollView horizontal={true} style={styles.horizontal}>
           <RegionCard
-            uri="https://i.pinimg.com/custom_covers/222x/646970371409284325_1605326183.jpg"
+            uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6v_BmqFV2htHGNQ_iQys8sMElvtnA1XL3Vg&usqp=CAU"
             title={`I'm flexible`}
           />
           <RegionCard
-            uri="https://i.pinimg.com/custom_covers/222x/646970371409284325_1605326183.jpg"
-            title={`Europe`}
+            uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlnaY4lKI_-o9wEn6V3H3kAqtyPShxq3fi0A&usqp=CAU"
+            title={`USA`}
           />
           <RegionCard
-            uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPQFbVpEJtL7bMIRmJUpSIGOV1PJopHCj-Aw&usqp=CAU"
+            uri="http://imagescdn.gettyimagesbank.com/500/18/039/355/0/1001371202.jpg"
             title={`France`}
           />
           <RegionCard
-            uri="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPQFbVpEJtL7bMIRmJUpSIGOV1PJopHCj-Aw&usqp=CAU"
+            uri="http://imagescdn.gettyimagesbank.com/500/19/005/428/0/1090821884.jpg"
             title={`Korea`}
           />
         </ScrollView>

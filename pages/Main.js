@@ -43,7 +43,7 @@ export default function App() {
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          // Alert.alert("Modal has been closed.");
           setModalVisible(!modalVisible);
         }}
       >
@@ -52,9 +52,9 @@ export default function App() {
           setModalVisible={setModalVisible}
         />
       </Modal>
-      <View style={styles.banner}>
+      {/* <View style={styles.banner}>
         <Text>Banner</Text>
-      </View>
+      </View> */}
       <View style={styles.main}>
         {/* <Text>rif</Text> */}
         <ScrollView>

@@ -38,8 +38,6 @@ export default function Login() {
       body: JSON.stringify({
         email: input_email_value,
         password: input_password_value,
-        // email: "abcde0203@naver.com",
-        // password: "abcde7812119",
       }),
     };
     console.log(request_options);
