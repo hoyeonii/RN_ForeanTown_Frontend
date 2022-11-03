@@ -111,17 +111,89 @@ const data = {
 export const gather_rooms = [
   {
     id: 1,
-    subject: "한독커플",
+    subject: "한독커플 있으신가요",
     content:
       "서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!",
     link_url: "httpsrij:fqreifoieqrf.com",
+    address: "홍대",
     user_limit: 5,
-    male_ratio: 0.666,
-    start_date: "1000-01-01 00:00:00",
-    end_date: "1000-01-02 00:00:00",
-    start_time: "1000-01-01 00:00:00",
-    end_time: "1000-01-02 00:00:00",
-    gather_room_category_id: 2,
-    img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+    start_date: "2022-01-01 00:00:00",
+    end_date: "2022-01-02 00:00:00",
+    start_time: "2022-01-01 00:00:00",
+    end_time: "2022-01-02 00:00:00",
+    creator_id: "게더",
+
+    gather_room_category_id: 1, //카테고리별 id 정하기
+    // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+  },
+
+  {
+    id: 2,
+    subject: "중국어 배우고 싶어요!",
+    content:
+      "내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???내년에 중국으로 교환학생가서 중국어를 배우고 친구도 사귀고 싶어요! 한국어랑 언어교환하실분 있나요???",
+    link_url: "httpsrij:fqreifoieqrf.com",
+    address: "강남",
+    user_limit: 1,
+    male_ratio: 0,
+    start_date: "2022-01-01 00:00:00",
+    end_date: "2022-01-02 00:00:00",
+    start_time: "2022-01-01 00:00:00",
+    end_time: "2022-01-02 00:00:00",
+    creator_id: "타운",
+
+    gather_room_category_id: 3, //카테고리별 id 정하기
+    // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+  },
+  {
+    id: 3,
+    subject: "ANyone up for a drink?",
+    content:
+      "M r. and Mrs. Dursley, of number four, Privet Drive, wer proud to say that they were perfectly normal, thank you verymuch.  ey were the last people you’d expect to be involved in anything strange or mysterious, because they just didn’t hold with such nonsense. Mr. Dursley was the director of a fi rm called Grunnings, whichmade drills. He was a big, beefy man with hardly any neck, although he did have a very large mustache. Mrs. Dursley was thin and blonde and had nearly twice the usual amount of neck, which came in very useful as sh her time craning over  garden fences, spying on the neighbors.sleys had a small  son called Dudley and in their opinion there was no fi ner boy anywhere.  e Dursleys had everything th",
+    link_url: "httpsrij:fqreifoieqrf.com",
+    address: "신촌",
+    user_limit: 1,
+    male_ratio: 0,
+    start_date: "2022-01-01 00:00:00",
+    end_date: "2022-01-02 00:00:00",
+    start_time: "2022-01-01 00:00:00",
+    end_time: "2022-01-02 00:00:00",
+    creator_id: "와아ㅏ",
+    gather_room_category_id: 4, //카테고리별 id 정하기
+    // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+  },
+  {
+    id: 4,
+    subject: "change in the geometry o",
+    content:
+      "Please Edit the Question to specify the error you receive. Sample input data is also necessary, and making it a reproducible example by providing the full CREATE TABLE, CREATE FUNCTION, and CREATE TRIGGER syntax would increase the likelihood of generating a response",
+    link_url: "httpsrij:fqreifoieqrf.com",
+    address: "건대",
+    user_limit: 1,
+    male_ratio: 0,
+    start_date: "2022-01-01 00:00:00",
+    end_date: "2022-01-02 00:00:00",
+    start_time: "2022-01-01 00:00:00",
+    end_time: "2022-01-02 00:00:00",
+    creator_id: "와아ㅏ",
+    gather_room_category_id: 2, //카테고리별 id 정하기
+    // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
+  },
+  {
+    id: 5,
+    subject: "I'm using PostGIS and I would like to use trigger",
+    content:
+      "As of PostgreSQL 12 you can use the GENERATED column definitions for an auto-updated read-only field (with some restrictions)     ALTER TABLE table      ADD COLUMN area_calc FLOAT GENERATED ALWAYS AS ( ST_Area(geom)/10000 ) STORED    Values generated from simple intra-row calculations which will never participate in filter conditions or joins are a good fit for dynamic (and lazy) evaluation, e.g. this approach or as part of a View.",
+    link_url: "httpsrij:fqreifoieqrf.com",
+    address: "서울숲",
+    user_limit: 1,
+    male_ratio: 0,
+    start_date: "2022-01-01 00:00:00",
+    end_date: "2022-01-02 00:00:00",
+    start_time: "2022-01-01 00:00:00",
+    end_time: "2022-01-02 00:00:00",
+    creator_id: "와아ㅏ",
+    gather_room_category_id: 1, //카테고리별 id 정하기
+    // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
   },
 ];
