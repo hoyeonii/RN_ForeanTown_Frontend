@@ -3,6 +3,7 @@ import {
   Image,
   ScrollView,
   StyleSheet,
+  ImageBackground,
   Text,
   Button,
   TouchableOpacity,
@@ -62,38 +63,44 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <CategoryBar
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-      />
+    <ImageBackground
+      source={require("../assets/bg3.jpg")}
+      resizeMode="cover"
+      style={styles.image}
+    >
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.title}>ForeaTown</Text>
+        <CategoryBar
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
 
-      {/* <View style={styles.banner}>
+        {/* <View style={styles.banner}>
         <Text>Banner</Text>
       </View> */}
-      <View style={styles.main}>
-        {/* <Text>rif</Text> */}
-        <ScrollView>
-          <StatusBar style="auto" />
-          {filteredPost(gather_rooms).map((item, i) => (
-            <Card
-              key={i}
-              item={item}
+        <View style={styles.main}>
+          {/* <Text>rif</Text> */}
+          <ScrollView>
+            <StatusBar style="auto" />
+            {filteredPost(gather_rooms).map((item, i) => (
+              <Card
+                key={i}
+                item={item}
 
-              //   onPress={() => navigation.push("Detail")}
-            />
-          ))}
-        </ScrollView>
-      </View>
-      {/* <Footer /> */}
-    </SafeAreaView>
+                //   onPress={() => navigation.push("Detail")}
+              />
+            ))}
+          </ScrollView>
+        </View>
+        {/* <Footer /> */}
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     // alignItems: "center",
     // justifyContent: "center",
     // alignSelf: "flex-start",
@@ -102,13 +109,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     // borderWidth: 1,
     borderColor: "red",
+    // backgroundColor: "#685073",
   },
-
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 20,
+    textAlign: "center",
+    padding: 10,
+    color: "white",
+  },
   banner: {
     backgroundColor: "#8587DC",
     height: 50,
   },
   main: {
-    flex: 11,
+    flex: 1,
   },
 });

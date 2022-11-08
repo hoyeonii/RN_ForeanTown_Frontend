@@ -14,6 +14,7 @@ import {
 import React, { useState, useEffect, useCallback } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { gather_rooms } from "../data/dummydata";
+import UserProfileImg from "../components/UserProfileImg";
 function Detail({ route }) {
   const [data, setData] = useState("");
   const images = [
@@ -79,26 +80,33 @@ function Detail({ route }) {
           <Text style={styles.street}>👥 {data.user_limit}</Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={[styles.section, styles.content]}>
           <Text style={styles.text}>{data.content}</Text>
         </View>
         <View style={styles.section}>
           <Text style={styles.fontM}>Host</Text>
           <View style={styles.hostInfoWrapper}>
-            <Image
-              source={{
-                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s",
-              }}
-              style={styles.userPic}
-            />
+            <View style={styles.userPic}>
+              <UserProfileImg
+                img={
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s"
+                }
+              />
+            </View>
             <Text style={styles.hostNameText}>Felix Navidad</Text>
           </View>
-          <Text style={styles.fontM}>Who's coming?</Text>
-          <View style={styles.whosComingWrapper}>
-            {images.map((el) => (
-              <Image source={{ uri: el }} style={styles.userPic} />
-            ))}
-          </View>
+
+          {/* //아직 참여자가 없을때는 안보여짐 */}
+          {images.length > 1 && <Text style={styles.fontM}>Who's coming?</Text>}
+          {images.length > 1 && (
+            <View style={styles.whosComingWrapper}>
+              {images.map((el, i) => (
+                <View style={styles.userPic} key={i}>
+                  <UserProfileImg img={el} />
+                </View>
+              ))}
+            </View>
+          )}
 
           <View style={styles.btnWrapper}>
             <TouchableOpacity style={styles.joinBtn}>
@@ -129,11 +137,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   section: {
-    borderBottomWidth: 1,
-    borderColor: "lightgray",
     paddingVertical: 20,
   },
-  fontL: { fontSize: 25, fontWeight: "bold", paddingBottom: 10 },
+  content: {
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+
+    borderColor: "lightgray",
+  },
+  fontL: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
   fontM: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
 
   text: { lineHeight: 22, fontSize: 15 },

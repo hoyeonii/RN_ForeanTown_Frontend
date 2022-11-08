@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     // flex: 2,
     borderBottomWidth: 2,
     borderColor: "lightgray",
+    borderRadius: 50,
     // top: 0,
     flexDirection: "row",
     width: "100%",

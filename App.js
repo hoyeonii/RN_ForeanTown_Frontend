@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
+  ImageBackground,
 } from "react-native";
 import React, {
   useEffect,
@@ -48,11 +49,16 @@ export default function App() {
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     marginTop: 40,
-//     borderWidth: 1,
+const styles = StyleSheet.create({
+  // container: {
 
-//   },
-// });
+  //   flex: 1,
+  //   marginTop: 40,
+  //   borderWidth: 1,
+  //   backgroundColor: "black",
+  // },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+});

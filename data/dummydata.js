@@ -121,7 +121,7 @@ export const gather_rooms = [
     end_date: "2022-01-02 00:00:00",
     start_time: "2022-01-01 00:00:00",
     end_time: "2022-01-02 00:00:00",
-    creator_id: "게더",
+    creator_id: 1,
 
     gather_room_category_id: 1, //카테고리별 id 정하기
     // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
@@ -140,7 +140,7 @@ export const gather_rooms = [
     end_date: "2022-01-02 00:00:00",
     start_time: "2022-01-01 00:00:00",
     end_time: "2022-01-02 00:00:00",
-    creator_id: "타운",
+    creator_id: 1,
 
     gather_room_category_id: 3, //카테고리별 id 정하기
     // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
@@ -164,7 +164,8 @@ export const gather_rooms = [
   },
   {
     id: 4,
-    subject: "change in the geometry o",
+    subject:
+      "나는야 주스 될거야. 나는야 캐쳡될거야 나는야 춤을 출거야 멋쟁이 토마토 토마토!",
     content:
       "Please Edit the Question to specify the error you receive. Sample input data is also necessary, and making it a reproducible example by providing the full CREATE TABLE, CREATE FUNCTION, and CREATE TRIGGER syntax would increase the likelihood of generating a response",
     link_url: "httpsrij:fqreifoieqrf.com",
@@ -175,13 +176,14 @@ export const gather_rooms = [
     end_date: "2022-01-02 00:00:00",
     start_time: "2022-01-01 00:00:00",
     end_time: "2022-01-02 00:00:00",
-    creator_id: "와아ㅏ",
+    creator_id: 1,
     gather_room_category_id: 2, //카테고리별 id 정하기
     // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
   },
   {
     id: 5,
-    subject: "I'm using PostGIS and I would like to use trigger",
+    subject:
+      "I'm using PostGIS and I would like to use trigger like to use trigger",
     content:
       "As of PostgreSQL 12 you can use the GENERATED column definitions for an auto-updated read-only field (with some restrictions)     ALTER TABLE table      ADD COLUMN area_calc FLOAT GENERATED ALWAYS AS ( ST_Area(geom)/10000 ) STORED    Values generated from simple intra-row calculations which will never participate in filter conditions or joins are a good fit for dynamic (and lazy) evaluation, e.g. this approach or as part of a View.",
     link_url: "httpsrij:fqreifoieqrf.com",
@@ -197,3 +199,18 @@ export const gather_rooms = [
     // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
   },
 ];
+
+export const userData = {
+  id: 1,
+  name: "유저이름",
+  nickname: "유저닉네임",
+  email: "qrfff@naver.com",
+  password: "qrfff",
+  age: 22,
+  is_male: false,
+  location: "홍대",
+  profile_img_url:
+    "https://i.pinimg.com/custom_covers/222x/646970371409284325_1605326183.jpg",
+  country_id: 1,
+  is_active: true,
+};

@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "gray",
     padding: 20,
-    backgroundColor: "#e3e4fc",
+    backgroundColor: "#fff",
   },
   heartIcon: {
     position: "absolute",
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     borderTopWidth: 1,
-    borderTopColor: "white",
+    borderTopColor: "grey",
     paddingTop: 10,
     marginTop: 10,
   },
