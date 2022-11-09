@@ -14,10 +14,26 @@ import { AuthContext } from "../App";
 import Card from "../components/Card";
 import { gather_rooms, userData } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
+import { useNavigation } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function MyPage() {
   const { user, setUser } = useContext(AuthContext);
   const [showRoomof, setShowRoomOf] = useState("Created");
+  const navigation = useNavigation();
+
+  const removeData = async (key) => {
+    console.log("removeData data");
+    try {
+      await AsyncStorage.removeItem(key);
+      navigation.push("Main");
+
+      console.log("done!!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <ImageBackground
       source={require("../assets/bg3.jpg")}
@@ -34,7 +50,7 @@ export default function MyPage() {
               {" "}
               {userData.age} {userData.is_male ? "♂" : "♀"}
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.push("Chat")}>
               <Text style={styles.messageBtn}>Message</Text>
             </TouchableOpacity>
           </View>
@@ -101,6 +117,13 @@ export default function MyPage() {
         }}
       /> */}
       </View>
+      <Button
+        title="Log Out"
+        onPress={() => {
+          removeData("token");
+          setUser(null);
+        }}
+      />
     </ImageBackground>
   );
 }

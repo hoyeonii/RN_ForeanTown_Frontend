@@ -77,7 +77,7 @@ function Footer() {
         // name={user ? "user" : "nonpe"}
         name={user ? user : "로그인"}
       />
-      {/* <Button
+      <Button
         title="clear"
         onPress={() => {
           removeData("token");
@@ -89,7 +89,7 @@ function Footer() {
         onPress={() => {
           readAsyncData();
         }}
-      /> */}
+      />
     </View>
   );
 }

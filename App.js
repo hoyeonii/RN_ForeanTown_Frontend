@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const AuthContext = createContext();
 
 export default function App() {
-  const [user, setUser] = useState("ffff");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     retrieveData("token");

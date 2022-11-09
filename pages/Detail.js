@@ -74,9 +74,13 @@ function Detail({ route }) {
         <View style={styles.section}>
           <Text style={styles.fontL}>{data.subject}</Text>
           <Text style={styles.street}>📍 {data.address}</Text>
-          <Text style={styles.street}>
-            📅 {data.start_date && data.start_date.split(" ")[0]}
-          </Text>
+          {(data.gather_room_category_id === 1 ||
+            data.gather_room_category_id === 4) && (
+            <Text style={styles.street}>
+              📅 {data.gather_room_category_id === 4 && "~"}
+              {data.start_date && data.start_date.split(" ")[0]}
+            </Text>
+          )}
           <Text style={styles.street}>👥 {data.user_limit}</Text>
         </View>
 

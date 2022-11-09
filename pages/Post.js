@@ -17,20 +17,28 @@ import data from "../data/countries";
 import CategoryBar from "../components/CategoryBar";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 export default function Post() {
   // const [showSelectBox, setShowSelectBox] = useState(false);
   // const [selectedCountry, setSelectedCountry] = useState("국가를 선택해주세요");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [inputTitle, setInputTitle] = useState("");
-  // const [inputWhen, setInputWhen] = useState(new Date(1598051730000));
+  const [inputWhen, setInputWhen] = useState(new Date());
+  // const [inputWhen, setInputWhen] = useState(
+  //   `${new Date().getFullYear()}-${
+  //     new Date().getMonth() + 1
+  //   }-${new Date().getDate()}`
+  // );
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  showDatePicker;
   const [inputOnline, setInputOnline] = useState("Online");
   const [inputWhere, setInputWhere] = useState(null);
   const [inputWho, setInputWho] = useState(1);
   const [inputDetail, setInputDetail] = useState("");
   const [image, setImage] = useState([]);
 
-  const onlineLocation = ["Jungle", "Beach", "School"];
+  // const onlineLocation = ["Jungle", "Beach", "School"];
   const offlineLocation = [
     "HongDae",
     "GangNam",
@@ -140,11 +148,35 @@ export default function Post() {
             />
           </View>
 
-          <View style={styles.inputBox}>
-            <Text style={styles.textBold}>When</Text>
-            <TextInput style={styles.textInput} />
-            {/* <Text>{inputWhen}</Text> */}
-          </View>
+          {(selectedCategory === "MeetUp" || selectedCategory === "Hiring") && (
+            <TouchableOpacity
+              onPress={() => {
+                setShowDatePicker(true);
+              }}
+              style={styles.inputBox}
+            >
+              <Text style={styles.textBold}>When</Text>
+              {/* <Text style={styles.textBold}></Text> */}
+              <Text style={styles.textInput}>{`${new Date(
+                inputWhen
+              ).getFullYear()}-${new Date(inputWhen).getMonth() + 1}-${new Date(
+                inputWhen
+              ).getDate()}`}</Text>
+              {showDatePicker && (
+                <RNDateTimePicker
+                  value={new Date()}
+                  mode="date"
+                  // minimumDate={new Date()}
+                  // maximumDate={new Date(2023, 0, 1)}
+                  onChange={(e) => {
+                    setInputWhen(e.nativeEvent.timestamp);
+                    setShowDatePicker(false);
+                  }}
+                />
+              )}
+              {/* <Text>{inputWhen}</Text> */}
+            </TouchableOpacity>
+          )}
 
           <View style={styles.inputBox}>
             <Text style={styles.textBold}>Where</Text>
@@ -194,8 +226,13 @@ export default function Post() {
             </View>
             <SelectDropdown
               style={styles.dropDown}
-              data={inputOnline === "Online" ? onlineLocation : offlineLocation}
-              defaultButtonText={"Select Location"}
+              data={inputOnline === "Offline" && offlineLocation}
+              defaultButtonText={
+                inputOnline === "Online"
+                  ? "Will be randomly assigned"
+                  : "Select Location"
+              }
+              disabled={inputOnline === "Offline" ? false : true}
               buttonTextAfterSelection={(selectedItem, index) => {
                 setInputWhere(selectedItem);
                 return selectedItem;
@@ -309,6 +346,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     color: "white",
   },
+
   inputOnlineWrapper: {
     flexDirection: "row",
   },
@@ -335,6 +373,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
   },
+
   whoWrapper: {
     flexDirection: "row",
 

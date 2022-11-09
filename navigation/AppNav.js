@@ -6,10 +6,14 @@ import Login from "../pages/Login";
 import MyPage from "../pages/MyPage";
 import SignUp from "../pages/SignUp.js";
 import Post from "../pages/Post.js";
+import Chat from "../pages/Chat.js";
+import Additional from "../pages/Additional.js";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Footer from "../components/Footer";
+
 export const AuthContext = createContext();
+
 export default function AppNav() {
   const Stack = createNativeStackNavigator();
 
@@ -23,9 +27,11 @@ export default function AppNav() {
         <Stack.Screen name="Detail" component={Detail} />
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="Post" component={Post} />
+        <Stack.Screen name="Chat" component={Chat} />
 
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="Additional" component={Additional} />
       </Stack.Navigator>
       <Footer />
     </NavigationContainer>

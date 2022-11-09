@@ -49,7 +49,12 @@ function Card({ item }) {
           <Text style={styles.textBold}>{item.subject}</Text>
           {/* <Text style={styles.text}>{item.content}</Text> */}
           <Text style={styles.text}>📅 {item.start_date.split(" ")[0]}</Text>
-          <Text style={styles.text}>📍 {item.address}</Text>
+          <Text style={styles.text}>
+            <Text style={styles.isOnlineTxt}>
+              {item.is_online ? " on " : " off "}
+            </Text>{" "}
+            {item.address}
+          </Text>
         </View>
         <View style={styles.detailUnder}>
           <Text>👥 {item.user_limit}</Text>
@@ -97,6 +102,7 @@ const styles = StyleSheet.create({
   },
   // detailLeft: { width: "80%" },
   //   detailRight: { borderWidth: 2 },
+
   detailUnder: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -122,6 +128,11 @@ const styles = StyleSheet.create({
     color: "gray",
     // paddingBottom: 10,
     // overflow: "wrap",
+  },
+  isOnlineTxt: {
+    backgroundColor: "#6685FF",
+    color: "white",
+    fontSize: 12,
   },
 });
 
