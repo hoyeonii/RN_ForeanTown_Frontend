@@ -43,12 +43,14 @@ function Card({ item }) {
       <Text style={styles.heartIcon}>❤</Text>
       <View style={styles.detail}>
         <Text style={styles.category}>
-          {getCategorybyID(item.gather_room_category_id)}
+          {getCategorybyID(item.gather_room_category)}
         </Text>
         <View style={styles.detailUpper}>
           <Text style={styles.textBold}>{item.subject}</Text>
           {/* <Text style={styles.text}>{item.content}</Text> */}
-          <Text style={styles.text}>📅 {item.start_date.split(" ")[0]}</Text>
+          <Text style={styles.text}>
+            📅 {item.date_time && item.date_time.split("T")[0]}
+          </Text>
           <Text style={styles.text}>
             <Text style={styles.isOnlineTxt}>
               {item.is_online ? " on " : " off "}

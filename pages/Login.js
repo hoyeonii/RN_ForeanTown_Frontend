@@ -157,7 +157,10 @@ export default function Login() {
                 : true
             }
             onPress={() => {
-              do_login();
+              storeData("token", "qwert12");
+              setUser("Me");
+              navigation.push("Main");
+              //   do_login();
             }}
           >
             <Text style={styles.postTxt}>Sign In</Text>
@@ -169,14 +172,15 @@ export default function Login() {
           >
             <Text style={styles.notRegisteredBtn}>Not registered yet?</Text>
           </TouchableOpacity>
-          <Button
+          {/* <Button
             title="storeData(현재 로그인버튼)"
             onPress={() => {
               storeData("token", "qwert12");
-              setUser("유저네임");
+              setUser("Me");
+              navigation.push("Main");
             }}
           />
-          <Button title="retrieveData" onPress={() => retrieveData("token")} />
+          <Button title="retrieveData" onPress={() => retrieveData("token")} /> */}
         </View>
       </View>
     </ImageBackground>

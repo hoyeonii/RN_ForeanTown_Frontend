@@ -19,16 +19,20 @@ import Card from "../components/Card";
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
 import SelectDropdown from "react-native-select-dropdown";
+import rootUrl from "../data/rootUrl";
 
 export default function Additional() {
-  const navigation = useNavigation();
+  const navigate = useNavigation();
   const { setUser } = useContext(AuthContext);
+
+  const [countryList, setCountryList] = useState([]);
   const [input_nickName_value, set_input_nickName_value] = useState("");
   const [input_age_value, set_input_age_value] = useState("");
   const [input_isMale_value, set_input_isMale_value] = useState(true);
   const [input_location_value, set_input_location_value] = useState("");
   const [input_country_value, set_input_country_value] = useState("");
   const [ErrMessage, setErrMessage] = useState("");
+
   //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
   const offlineLocation = [
     "HongDae",
@@ -47,24 +51,20 @@ export default function Additional() {
     "Busan",
   ];
 
-  //http://localhost:8000/users/country-list?name=EN 에서 가져오기
-  const countryList = [
-    {
-      name: "England",
-    },
-    {
-      name: "France",
-    },
-    {
-      name: "Germany",
-    },
-    {
-      name: "South Korea",
-    },
-    {
-      name: "United States",
-    },
-  ];
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () =>
+    fetch(`${rootUrl}/users/country/list`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setCountryList(data);
+        console.log("웨우ㅏㄴ돼");
+      })
+      .catch((err) => console.log(err));
+
 
   const do_login = () => {
     console.log("do loginn");
@@ -150,7 +150,7 @@ export default function Additional() {
         <View style={styles.innercontainer}>
           <Text style={styles.title}>Tell us more about you!</Text>
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Nickname {input_nickName_value}</Text>
+            <Text style={styles.textBold}>Nickname </Text>
             <TextInput
               style={styles.textInput}
               value={input_nickName_value}
@@ -162,7 +162,7 @@ export default function Additional() {
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Age{input_age_value}</Text>
+            <Text style={styles.textBold}>Age</Text>
             <TextInput
               style={styles.textInput}
               value={input_age_value}
@@ -222,7 +222,7 @@ export default function Additional() {
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Location{input_location_value}</Text>
+            <Text style={styles.textBold}>Location</Text>
             <SelectDropdown
               style={styles.dropDown}
               data={offlineLocation}
@@ -240,7 +240,7 @@ export default function Additional() {
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Country{input_country_value}</Text>
+            <Text style={styles.textBold}>Country</Text>
             <SelectDropdown
               style={styles.dropDown}
               data={countryList.map((el) => el.name)}
@@ -270,20 +270,21 @@ export default function Additional() {
                 : true
             }
             onPress={() => {
-              do_login();
+              // do_login();
+              navigate.push("Login");
             }}
           >
             <Text style={styles.postTxt}>Save</Text>
           </TouchableOpacity>
 
-          <Button
+          {/* <Button
             title="storeData(현재 로그인버튼)"
             onPress={() => {
               storeData("token", "qwert12");
               setUser("유저네임");
             }}
           />
-          <Button title="retrieveData" onPress={() => retrieveData("token")} />
+          <Button title="retrieveData" onPress={() => retrieveData("token")} /> */}
         </View>
       </View>
     </ImageBackground>

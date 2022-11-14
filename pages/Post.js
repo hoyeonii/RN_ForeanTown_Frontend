@@ -18,6 +18,11 @@ import CategoryBar from "../components/CategoryBar";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import {
+  NavigationHelpersContext,
+  useNavigation,
+} from "@react-navigation/native";
+import rootUrl from "../data/rootUrl";
 
 export default function Post() {
   // const [showSelectBox, setShowSelectBox] = useState(false);
@@ -37,6 +42,7 @@ export default function Post() {
   const [inputWho, setInputWho] = useState(1);
   const [inputDetail, setInputDetail] = useState("");
   const [image, setImage] = useState([]);
+  const navigate = useNavigation();
 
   // const onlineLocation = ["Jungle", "Beach", "School"];
   const offlineLocation = [
@@ -56,6 +62,48 @@ export default function Post() {
     "Busan",
   ];
 
+  const handlePost = () => {
+    const request_options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: '{"name":"와우", "email": "abcde0203@naver.com", "password1": "abcde7812119","password2": "abcde7812119" }',
+    };
+    console.log(request_options);
+
+    fetch(`${rootUrl}/foreatown/gather-room`, request_options)
+      .then((response) => {
+        console.log(response.headers);
+        console.log("ok" + response.ok);
+        console.log("statusText" + response.statusText);
+        console.log("message" + response.message);
+
+        response.status >= 400
+          ? console.log("뭔가가 잘못됐으")
+          : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
+
+            response.json();
+      })
+      .then((res) => {
+        console.log("회원가입 결과");
+        console.log(res);
+
+        // storeData("token", res);
+        // setUser(res);
+
+        // localStorage.setItem("refresh_token", res.refresh_token);
+        // localStorage.setItem("access_token", res.access_token);
+        // localStorage.setItem("user_name", res.name + "님 안녕하세요");
+        // setTimeout(() => {
+        //   Router.push("/");
+        // }, 200);
+      })
+      .catch((err) => {
+        console.log("에러: " + err);
+      });
+  };
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -64,8 +112,6 @@ export default function Post() {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.cancelled) {
       setImage([...image, result.uri]);
@@ -310,7 +356,8 @@ export default function Post() {
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
-              //formData 만들어서 Post
+              handlePost();
+              // navigate.push("Main");
             }}
           >
             <Text style={styles.postTxt}>Post</Text>

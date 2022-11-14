@@ -19,24 +19,22 @@ import { useNavigation } from "@react-navigation/core";
 import FilterModal from "../components/FilterModal";
 import CategoryBar from "../components/CategoryBar";
 import { gather_rooms } from "../data/dummydata";
+import rootUrl from "../data/rootUrl";
 
 export default function App() {
-  // const [data, setData] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [roomsArr, setRoomsArr] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(1);
 
-  const navigation = useNavigation();
+  const loadData = () =>
+    fetch(`${rootUrl}/foreatown/gather-room/list/${selectedCategory}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRoomsArr(data);
+      });
 
-  // const loadData = () =>
-  //   fetch(
-  //     "https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&facet=host_response_rate&facet=host_verifications&facet=city&facet=property_type&facet=cancellation_policy&facet=features"
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setData(data.records);
-  //     });
-  // useEffect(() => {
-  //   loadData();
-  // }, []);
+  useEffect(() => {
+    loadData();
+  }, [selectedCategory]);
 
   function getCategorybyID(id) {
     switch (id) {
@@ -51,16 +49,16 @@ export default function App() {
     }
   }
 
-  function filteredPost(postArr) {
-    if (selectedCategory)
-      return postArr.filter(
-        (el) =>
-          getCategorybyID(el.gather_room_category_id).split(" ")[1] ===
-          selectedCategory
-      );
+  // function filteredPost(postArr) {
+  //   if (selectedCategory)
+  //     return postArr.filter(
+  //       (el) =>
+  //         getCategorybyID(el.gather_room_category_id).split(" ")[1] ===
+  //         selectedCategory
+  //     );
 
-    return postArr;
-  }
+  //   return postArr;
+  // }
 
   return (
     <ImageBackground
@@ -82,7 +80,7 @@ export default function App() {
           {/* <Text>rif</Text> */}
           <ScrollView>
             <StatusBar style="auto" />
-            {filteredPost(gather_rooms).map((item, i) => (
+            {roomsArr.map((item, i) => (
               <Card
                 key={i}
                 item={item}

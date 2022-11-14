@@ -21,14 +21,14 @@ function CategoryBar({ selectedCategory, setSelectedCategory }) {
             if (cat === selectedCategory) {
               setSelectedCategory(null);
             } else {
-              setSelectedCategory(cat);
+              setSelectedCategory(i + 1);
             }
           }}
           style={styles.category}
         >
           <Text
             style={
-              cat === selectedCategory
+              i + 1 === selectedCategory
                 ? [styles.largeText, styles.boldText]
                 : styles.largeText
             }

@@ -15,30 +15,29 @@ import React, { useState, useEffect, useCallback } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { gather_rooms } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
+import rootUrl from "../data/rootUrl";
 function Detail({ route }) {
   const [data, setData] = useState("");
   const images = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s",
-    "https://i.pinimg.com/custom_covers/222x/646970371409284325_1605326183.jpg",
+    "https://media.istockphoto.com/id/1328831714/photo/portrait-of-a-smiling-young-african-woman.jpg?b=1&s=170667a&w=0&k=20&c=SYNQ3l6j6KKUyGMc71nMfjzscuVL7_HEXRIN9BOE0fw=",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwyJXiHvSHXuLVSOLV7CYiHk0gUpsLlJZk1RjorToy&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s",
     "https://i.ytimg.com/vi/2uAIlbs8WeE/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDawsCv56e-dfPM9aVoK_okr5abgQ",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCN2zeOBbTbAyG4PVTaVsNi4dbfGW0WZP5t9yMONNQrjL8XvJe2nuqdQiAe0mAB9Dh-tw&usqp=CAU",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1jPV9rMr4gKjhBYId6LwFrBQWyqMhMNJoB0m_7Y28qOlpokEd8wjxFuyWtFIS9dSWj58&usqp=CAU",
   ];
-  // const loadData = () =>
-  //   fetch(
-  //     "https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&facet=host_response_rate&facet=host_verifications&facet=city&facet=property_type&facet=cancellation_policy&facet=features"
-  //   )
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       setData(
-  //         data.records.find((el) => el.fields.id === route.params.id).fields
-  //       );
-  //     })
-  //     .catch((err) => console.log(err));
+
+  const loadData = () =>
+    fetch(`${rootUrl}/foreatown/gather-room/${route.params.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
 
   useEffect(() => {
-    setData(gather_rooms.find((el) => el.id === route.params.id));
+    loadData();
   }, []);
 
   const handleLinking = useCallback(async (url) => {
@@ -66,45 +65,61 @@ function Detail({ route }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
-        {getCategorybyID(data.gather_room_category_id)}
-      </Text>
+      {data.gather_room_category && (
+        <Text style={styles.title}>{data.gather_room_category.name}</Text>
+      )}
 
       <ScrollView>
         <View style={styles.section}>
           <Text style={styles.fontL}>{data.subject}</Text>
-          <Text style={styles.street}>📍 {data.address}</Text>
-          {(data.gather_room_category_id === 1 ||
-            data.gather_room_category_id === 4) && (
-            <Text style={styles.street}>
-              📅 {data.gather_room_category_id === 4 && "~"}
-              {data.start_date && data.start_date.split(" ")[0]}
-            </Text>
-          )}
+          {data.address && <Text style={styles.street}>📍 {data.address}</Text>}
+          {data.gather_room_category &&
+            (data.gather_room_category.name === "MeetUp" ||
+              data.gather_room_category.name === "Language") && (
+              <Text style={styles.street}>
+                📅 {data.gather_room_category_id === 4 && "~"}
+                {data.date_time && data.date_time.split("T")[0]}
+              </Text>
+            )}
           <Text style={styles.street}>👥 {data.user_limit}</Text>
         </View>
 
         <View style={[styles.section, styles.content]}>
           <Text style={styles.text}>{data.content}</Text>
+          {data.gather_room_images?.length > 0 &&
+            data.gather_room_images?.map((el, i) => (
+              <Image
+                key={i}
+                style={styles.attachment}
+                source={{
+                  uri: el.profile_img_url,
+                }}
+              />
+            ))}
         </View>
         <View style={styles.section}>
           <Text style={styles.fontM}>Host</Text>
           <View style={styles.hostInfoWrapper}>
             <View style={styles.userPic}>
-              <UserProfileImg
-                img={
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s"
-                }
-              />
+              <UserProfileImg img={data.creator?.profile_img_url} />
             </View>
-            <Text style={styles.hostNameText}>Felix Navidad</Text>
+            <TouchableOpacity
+              onPress={() => {
+                //누르면 유저 프로필로 이동
+                //data.creator.id 사용
+              }}
+            >
+              <Text style={styles.hostNameText}>{data.creator?.name}</Text>
+            </TouchableOpacity>
           </View>
 
           {/* //아직 참여자가 없을때는 안보여짐 */}
-          {images.length > 1 && <Text style={styles.fontM}>Who's coming?</Text>}
-          {images.length > 1 && (
+          {data.participants?.length > 0 && (
+            <Text style={styles.fontM}>Who's coming?</Text>
+          )}
+          {data.participants?.length > 0 && (
             <View style={styles.whosComingWrapper}>
-              {images.map((el, i) => (
+              {data.participants?.map((el, i) => (
                 <View style={styles.userPic} key={i}>
                   <UserProfileImg img={el} />
                 </View>
@@ -149,6 +164,7 @@ const styles = StyleSheet.create({
 
     borderColor: "lightgray",
   },
+  attachment: { marginTop: 10, width: 150, height: 150 },
   fontL: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
   fontM: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
 

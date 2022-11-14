@@ -18,6 +18,7 @@ import Footer from "../components/Footer";
 import Card from "../components/Card";
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
+import rootUrl from "../data/rootUrl";
 
 export default function SignUp() {
   const navigation = useNavigation();
@@ -31,34 +32,41 @@ export default function SignUp() {
   const [emailErrMessage, setEmailErrMessage] = useState("");
   //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
 
-  const do_login = () => {
-    console.log("do loginn");
+  const handleSignUp = () => {
     const request_options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        name: input_name_value,
         email: input_email_value,
-        password: input_password_value,
+        password1: input_password_value,
+        password2: input_password2_value,
       }),
     };
     console.log(request_options);
-    fetch(`http://10.36.180.173:8000/users/login`, request_options)
+
+    fetch(`${rootUrl}/users/signup`, request_options)
       .then((response) => {
-        console.log(response.status);
+        console.log(response.headers);
+        console.log("ok" + response.ok);
+        console.log("statusText" + response.statusText);
+        console.log("message" + response.message);
+
         response.status >= 400
-          ? set_login_failed("이메일 또는 비밀번호가 잘못되었습니다.")
+          ? console.log("뭔가가 잘못됐으")
           : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
 
             response.json();
       })
       .then((res) => {
-        console.log("로그인 결과");
+        console.log("회원가입 결과");
         console.log(res);
 
-        storeData("token", res);
-        setUser(res);
+        // storeData("token", res);
+        // setUser(res);
+
         // localStorage.setItem("refresh_token", res.refresh_token);
         // localStorage.setItem("access_token", res.access_token);
         // localStorage.setItem("user_name", res.name + "님 안녕하세요");
@@ -118,7 +126,7 @@ export default function SignUp() {
         <View style={styles.innercontainer}>
           <Text style={styles.title}>Sign Up</Text>
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Name {input_name_value}</Text>
+            <Text style={styles.textBold}>Name</Text>
             <TextInput
               style={styles.textInput}
               value={input_name_value}
@@ -183,23 +191,17 @@ export default function SignUp() {
                 : true
             }
             onPress={() => {
-              do_login();
+              handleSignUp();
+              navigation.push("Additional");
             }}
           >
             <Text style={styles.postTxt}>Sign Up</Text>
           </TouchableOpacity>
+
           {/* <Button
-            title="storeData(현재 로그인버튼)"
-            onPress={() => {
-              storeData("token", "qwert12");
-              setUser("유저네임");
-            }}
-          />
-          <Button title="retrieveData" onPress={() => retrieveData("token")} /> */}
-          <Button
             title="Additional"
             onPress={() => navigation.push("Additional")}
-          />
+          /> */}
         </View>
       </View>
     </ImageBackground>
