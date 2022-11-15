@@ -2,14 +2,11 @@ import {
   View,
   Text,
   TextInput,
-  RefreshControl,
   Button,
   StyleSheet,
   TouchableOpacity,
-  KeyboardAvoidingView,
   ScrollView,
   ImageBackground,
-  PermissionsAndroid,
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
@@ -18,10 +15,7 @@ import CategoryBar from "../components/CategoryBar";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import {
-  NavigationHelpersContext,
-  useNavigation,
-} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import rootUrl from "../data/rootUrl";
 
 export default function Post() {
@@ -30,11 +24,6 @@ export default function Post() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [inputTitle, setInputTitle] = useState("");
   const [inputWhen, setInputWhen] = useState(new Date());
-  // const [inputWhen, setInputWhen] = useState(
-  //   `${new Date().getFullYear()}-${
-  //     new Date().getMonth() + 1
-  //   }-${new Date().getDate()}`
-  // );
   const [showDatePicker, setShowDatePicker] = useState(false);
   showDatePicker;
   const [inputOnline, setInputOnline] = useState("Online");
@@ -105,7 +94,6 @@ export default function Post() {
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -117,58 +105,6 @@ export default function Post() {
       setImage([...image, result.uri]);
     }
   };
-
-  //   const [countries, setCountries] = useState([]);
-
-  //   useEffect(() => {
-  //     loadCountries();
-  //   }, []);
-  //   function loadCountries() {
-  //     fetch(
-  //       "http://apis.data.go.kr/1262000/CountryCodeService2/getCountryCodeList2"
-  //     ).then((res) => console.log(res));
-  //     //   .then((res) => res.json())
-  //     //   .then((data) => {
-  //     //     console.log(data);
-  //     //     setCountries(data);
-  //     //   });
-  //   }
-
-  // async function showPicker() {
-  //   const grantedstorage = await PermissionsAndroid.request(
-  //     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-  //     {
-  //       titel: "App Camera Permission",
-  //       message: "App needs access to your camera",
-  //       buttonNeutral: "Ask me Later",
-  //       buttonNegative: "Cancel",
-  //       buttonPositive: "OK",
-  //     }
-  //   )
-  //     .then((res) => {
-  //       launch()
-  //         .then((res) => console.log(res))
-  //         .catch((err) => console.log(err));
-  //       console.log(res + "!!");
-  //     })
-  //     .catch((err) => console.log(err));
-
-  //   // if (grantedstorage === PermissionsAndroid.RESULTS.GRANTED) {
-  //   //   console.log("it is granted");
-  //   async function launch() {
-  //     console.log("런칭");
-  //     const result = await launchImageLibrary();
-  //     console.log("리설트: " + result);
-
-  //     if (result.didCancel) {
-  //       return null;
-  //     }
-  //     const localUri = result.assets[0].uri;
-  //     const uriPath = localUri.split("//").pop();
-  //     const imageName = localUri.split("/").pop();
-  //     setPhoto("file://" + uriPath);
-  //   }
-  // }
 
   return (
     <ImageBackground

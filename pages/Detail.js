@@ -16,8 +16,11 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { gather_rooms } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
 import rootUrl from "../data/rootUrl";
+import ShowImage from "../components/ShowImage";
+
 function Detail({ route }) {
   const [data, setData] = useState("");
+  const [showImageUri, setShowImageUri] = useState(null);
   const images = [
     "https://media.istockphoto.com/id/1328831714/photo/portrait-of-a-smiling-young-african-woman.jpg?b=1&s=170667a&w=0&k=20&c=SYNQ3l6j6KKUyGMc71nMfjzscuVL7_HEXRIN9BOE0fw=",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwyJXiHvSHXuLVSOLV7CYiHk0gUpsLlJZk1RjorToy&s",
@@ -65,6 +68,12 @@ function Detail({ route }) {
 
   return (
     <View style={styles.container}>
+      {showImageUri && (
+        <ShowImage
+          showImageUri={showImageUri}
+          setShowImageUri={setShowImageUri}
+        />
+      )}
       {data.gather_room_category && (
         <Text style={styles.title}>{data.gather_room_category.name}</Text>
       )}
@@ -88,17 +97,23 @@ function Detail({ route }) {
           <Text style={styles.text}>{data.content}</Text>
           {data.gather_room_images?.length > 0 &&
             data.gather_room_images?.map((el, i) => (
-              <Image
+              <TouchableOpacity
                 key={i}
-                style={styles.attachment}
-                source={{
-                  uri: el.profile_img_url,
+                onPress={() => {
+                  setShowImageUri(el.img_url);
                 }}
-              />
+              >
+                <Image
+                  style={styles.attachment}
+                  source={{
+                    uri: el.img_url,
+                  }}
+                />
+              </TouchableOpacity>
             ))}
         </View>
         <View style={styles.section}>
-          <Text style={styles.fontM}>Host</Text>
+          <Text style={styles.fontM}>Host{showImageUri}</Text>
           <View style={styles.hostInfoWrapper}>
             <View style={styles.userPic}>
               <UserProfileImg img={data.creator?.profile_img_url} />
@@ -165,6 +180,7 @@ const styles = StyleSheet.create({
     borderColor: "lightgray",
   },
   attachment: { marginTop: 10, width: 150, height: 150 },
+
   fontL: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
   fontM: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
 
