@@ -10,12 +10,14 @@ import {
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
+import FormData from "form-data";
 import data from "../data/countries";
 import CategoryBar from "../components/CategoryBar";
 import SelectDropdown from "react-native-select-dropdown";
 import * as ImagePicker from "expo-image-picker";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import rootUrl from "../data/rootUrl";
 
 export default function Post() {
@@ -30,10 +32,15 @@ export default function Post() {
   const [inputWhere, setInputWhere] = useState(null);
   const [inputWho, setInputWho] = useState(1);
   const [inputDetail, setInputDetail] = useState("");
-  const [image, setImage] = useState([]);
+  const [imageArr, setImageArr] = useState([]);
+  const [accessToken, setAccessToken] = useState([]);
+  setAccessToken;
   const navigate = useNavigation();
 
-  // const onlineLocation = ["Jungle", "Beach", "School"];
+  useEffect(() => {
+    checkAccessToken("accessToken");
+  }, []);
+
   const offlineLocation = [
     "HongDae",
     "GangNam",
@@ -51,46 +58,79 @@ export default function Post() {
     "Busan",
   ];
 
-  const handlePost = () => {
-    const request_options = {
+  function handlePost() {
+    const formData = new FormData();
+    // formData.append("subject", inputTitle);
+    // formData.append("content", inputDetail);
+    // formData.append("address", inputWhere);
+    // formData.append("is_online", inputOnline);
+    // formData.append("user_limit", inputWho);
+    // formData.append("date_time", inputWhen);
+    // formData.append("gather_room_category", selectedCategory);
+
+    formData.append("subject", "제목테스트");
+    formData.append("content", "내용테스트");
+    formData.append("address", inputOnline ? null : inputWhere);
+    formData.append("is_online", true);
+    formData.append("user_limit", 5);
+    formData.append("date_time", editDateForm(inputWhen));
+    //  "2021-06-25 17:00:00");
+    formData.append("gather_room_category", "Language");
+
+    appendImage(imageArr);
+
+    // fetch(`${rootUrl}/foreatown/gather-room`, {
+
+    console.log("토큰여기" + accessToken);
+    console.log("폼데이터" + formData);
+    console.log(formData);
+
+    fetch(`https://api.foreatown.com/foreatown/gather-room`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Accept: "*/*",
+        "Accept-Encoding": "gzip,deflate,br",
+        Connection: "keep-alive",
+        Authorization: "Bearer " + accessToken,
       },
-      body: '{"name":"와우", "email": "abcde0203@naver.com", "password1": "abcde7812119","password2": "abcde7812119" }',
-    };
-    console.log(request_options);
-
-    fetch(`${rootUrl}/foreatown/gather-room`, request_options)
-      .then((response) => {
-        console.log(response.headers);
-        console.log("ok" + response.ok);
-        console.log("statusText" + response.statusText);
-        console.log("message" + response.message);
-
-        response.status >= 400
-          ? console.log("뭔가가 잘못됐으")
-          : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
-
-            response.json();
+      body: formData,
+    })
+      .then((res) => res.json())
+      // .then((data) => Router.push(`/post/${data.id}`))
+      .then((data) => {
+        console.log(data);
+        // navigate.push(`Main`)
       })
-      .then((res) => {
-        console.log("회원가입 결과");
-        console.log(res);
 
-        // storeData("token", res);
-        // setUser(res);
-
-        // localStorage.setItem("refresh_token", res.refresh_token);
-        // localStorage.setItem("access_token", res.access_token);
-        // localStorage.setItem("user_name", res.name + "님 안녕하세요");
-        // setTimeout(() => {
-        //   Router.push("/");
-        // }, 200);
-      })
       .catch((err) => {
-        console.log("에러: " + err);
+        console.log("에러");
+
+        console.log(err);
       });
+  }
+
+  // input으로 파일 첨부시, 받아온 파일 array를 formData로 하나씩 넣어줌
+  function appendImage(imageArr) {
+    if (imageArr) {
+      for (let i = 0; i < imageArr.length; i++) {
+        formData.append("gather_room_images", imageArr[i]);
+      }
+    }
+  }
+
+  const checkAccessToken = async (key) => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        console.log("밸류" + value);
+        setAccessToken(value);
+      } else {
+        console.log("Sign In first");
+        navigate.push("Login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const pickImage = async () => {
@@ -102,9 +142,22 @@ export default function Post() {
     });
 
     if (!result.cancelled) {
-      setImage([...image, result.uri]);
+      setImageArr([...imageArr, result.uri]);
     }
   };
+  //  "2021-06-25 17:00:00");
+  function editDateForm(date) {
+    const newDate = new Date(date);
+    return (
+      [newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate()].join(
+        "-"
+      ) +
+      " " +
+      [newDate.getHours(), newDate.getMinutes() + 6, newDate.getSeconds()].join(
+        ":"
+      )
+    );
+  }
 
   return (
     <ImageBackground
@@ -119,9 +172,7 @@ export default function Post() {
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
           />
-
           <View style={styles.inputBox}>
-            {/* //글자수 제한 걸기 */}
             <Text style={styles.textBold}>Title</Text>
             <TextInput
               style={styles.textInput}
@@ -130,7 +181,7 @@ export default function Post() {
             />
           </View>
 
-          {(selectedCategory === "MeetUp" || selectedCategory === "Hiring") && (
+          {(selectedCategory === 1 || selectedCategory === 4) && (
             <TouchableOpacity
               onPress={() => {
                 setShowDatePicker(true);
@@ -138,7 +189,6 @@ export default function Post() {
               style={styles.inputBox}
             >
               <Text style={styles.textBold}>When</Text>
-              {/* <Text style={styles.textBold}></Text> */}
               <Text style={styles.textInput}>{`${new Date(
                 inputWhen
               ).getFullYear()}-${new Date(inputWhen).getMonth() + 1}-${new Date(
@@ -260,28 +310,24 @@ export default function Post() {
           <TouchableOpacity
             style={styles.attachmentBtn}
             onPress={pickImage}
-            disabled={image.length < 3 ? false : true}
+            disabled={imageArr.length < 3 ? false : true}
           >
-            <Text>{`Add Image (${image.length}/3)`}</Text>
+            <Text>{`Add Image (${imageArr.length}/3)`}</Text>
           </TouchableOpacity>
           <ScrollView style={styles.attachmentWrapper} horizontal={true}>
-            {image &&
-              image.map((img, i) => (
-                <View>
-                  <Image
-                    key={i}
-                    source={{ uri: img }}
-                    style={styles.attachment}
-                  />
+            {imageArr &&
+              imageArr.map((img, i) => (
+                <View key={i}>
+                  <Image source={{ uri: img }} style={styles.attachment} />
                   <TouchableOpacity
                     style={styles.attachmentDeleteBtn}
                     onPress={() => {
                       console.log(i);
 
-                      let copiedImg = [...image];
+                      let copiedImg = [...imageArr];
                       copiedImg.splice(i, 1);
-                      console.log(image);
-                      setImage(copiedImg);
+                      console.log(imageArr);
+                      setImageArr(copiedImg);
                     }}
                   >
                     <Text>X</Text>
@@ -293,7 +339,6 @@ export default function Post() {
             style={styles.postBtn}
             onPress={() => {
               handlePost();
-              // navigate.push("Main");
             }}
           >
             <Text style={styles.postTxt}>Post</Text>

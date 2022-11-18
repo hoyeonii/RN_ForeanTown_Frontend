@@ -9,81 +9,70 @@ import {
   ScrollView,
   ImageBackground,
 } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../App";
 import Card from "../components/Card";
 import { gather_rooms, userData } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
 import { useNavigation } from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import rootUrl from "../data/rootUrl";
 
 export default function MyPage() {
+  const [data, setData] = useState([]);
   const { user, setUser } = useContext(AuthContext);
   const [showRoomof, setShowRoomOf] = useState("Created");
   const navigation = useNavigation();
 
-  const created_rooms = [
-    {
-      id: 1,
-      subject: "한독커플 있으신가요(kor-ger couple)",
-      content:
-        "서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!서울사시는 한독커플 있으신가요! 저희 ㅐ만나요!!",
-      link_url: "httpsrij:fqreifoieqrf.com",
-      address: "홍대",
-      is_online: true,
-      user_limit: 5,
-      start_date: "2022-12-01 00:00:00",
-      end_date: "2022-01-02 00:00:00",
-      start_time: "2022-01-01 00:00:00",
-      end_time: "2022-01-02 00:00:00",
-      creator_id: "잠실물주먹",
+  const loadData = () => {
+    const requestOption = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authentication: "bearer " + "",
+      },
+    };
 
-      gather_room_category_id: 1, //카테고리별 id 정하기
-      // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
-    },
-    {
-      id: 2,
-      subject: "Looking for language exchange! Spanish(me)-Korean(you)",
-      content:
-        "As of PostgreSQL 12 you can use the GENERATED column definitions for an auto-updated read-only field (with some restrictions)     ALTER TABLE table      ADD COLUMN area_calc FLOAT GENERATED ALWAYS AS ( ST_Area(geom)/10000 ) STORED    Values generated from simple intra-row calculations which will never participate in filter conditions or joins are a good fit for dynamic (and lazy) evaluation, e.g. this approach or as part of a View.",
-      link_url: "httpsrij:fqreifoieqrf.com",
-      address: "서울숲",
-      user_limit: 1,
-      male_ratio: 0,
-      start_date: "2022-11-23 00:00:00",
-      end_date: "2022-01-02 00:00:00",
-      start_time: "2022-01-01 00:00:00",
-      end_time: "2022-01-02 00:00:00",
-      creator_id: "잠실물주먹",
-      gather_room_category_id: 3, //카테고리별 id 정하기
-      // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
-    },
+    fetch(`${rootUrl}/foreatown/gather-room/mylist`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        console.log("우왕");
+        // console.log(data);
+      })
+      .catch((err) => console.log(err));
+  };
+  ///users/my-info
 
-    {
-      id: 13,
-      subject: "독일 통일기념일 같이 축하해요!",
-      content:
-        "통일기념일로 남편이랑 독일친구들 불러서 놀건데 관심있으신 독일인이나 한독커플 연락주세요:)",
-      link_url: "httpsrij:fqreifoieqrf.com",
-      address: "Gangnam",
-      is_online: false,
-      user_limit: 6,
-      male_ratio: 0,
-      start_date: "2022-11-11 00:00:00",
-      end_date: "2022-01-02 00:00:00",
-      start_time: "2022-01-01 00:00:00",
-      end_time: "2022-01-02 00:00:00",
-      creator_id: "잠실물주먹",
-      gather_room_category_id: 1, //카테고리별 id 정하기
-      // img: "https://t4.ftcdn.net/jpg/02/77/68/51/360_F_277685185_UAYxm224UPelni1rxsuAUZQbfhly0RpL.jpg",
-    },
-  ];
+  const loadMyInfo = () => {
+    const requestOption = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authentication: "bearer " + "",
+      },
+    };
+    console.log("오와앙");
+
+    fetch(`${rootUrl}/users/my-info`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        // setData(data);
+        // console.log("MyInfo");
+        console.log("rfwf" + data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    // loadData();
+    loadMyInfo();
+  }, []);
 
   const removeData = async (key) => {
     console.log("removeData data");
     try {
       await AsyncStorage.removeItem(key);
-      navigation.push("Main");
 
       console.log("done!!");
     } catch (error) {
@@ -159,7 +148,7 @@ export default function MyPage() {
           {/* {방 맵핑해서 보여주기} */}
           <View style={styles.rooms}>
             <ScrollView style={styles.roomsScroll}>
-              {created_rooms
+              {data
                 // .filter((el) => el.creator_id === 1)
                 .map((el, i) => (
                   <Card item={el} key={i} />
@@ -167,8 +156,10 @@ export default function MyPage() {
               <Button
                 title="Log Out"
                 onPress={() => {
-                  removeData("token");
+                  removeData("accessToken");
+                  removeData("refreshToken");
                   setUser(null);
+                  navigation.push("Main");
                 }}
               />
             </ScrollView>

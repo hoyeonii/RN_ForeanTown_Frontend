@@ -152,6 +152,12 @@ function Detail({ route }) {
           </View>
         </View>
       </ScrollView>
+      {showImageUri && (
+        <ShowImage
+          showImageUri={showImageUri}
+          setShowImageUri={setShowImageUri}
+        />
+      )}
     </View>
   );
 }

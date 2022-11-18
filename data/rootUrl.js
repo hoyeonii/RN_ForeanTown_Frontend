@@ -1,3 +1,3 @@
-const rootUrl = "http://3.39.222.104:8000";
+const rootUrl = "https://api.foreatown.com";
 
 export default rootUrl;

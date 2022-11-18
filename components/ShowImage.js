@@ -3,13 +3,14 @@ import React from "react";
 
 export default function ShowImage({ showImageUri, setShowImageUri }) {
   return (
-    <View>
+    <View style={styles.container}>
       <Image
         style={styles.showImage}
         source={{
           uri: showImageUri,
         }}
       />
+
       <TouchableOpacity
         style={styles.closeBtn}
         onPress={() => {
@@ -22,11 +23,17 @@ export default function ShowImage({ showImageUri, setShowImageUri }) {
   );
 }
 const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    marginHorizontal: 30,
+    backgroundColor: "white",
+  },
+
   showImage: {
     resizeMode: "contain",
-    height: "100%",
-    width: "100%",
-    borderWidth: 1,
+    flex: 1,
   },
   closeBtn: {
     position: "absolute",
@@ -34,7 +41,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderWidth: 3,
     borderColor: "#6685FF",
-    borderRadius: 30,
+    borderRadius: 15,
     alignItems: "center",
     alignContent: "center",
     top: 20,

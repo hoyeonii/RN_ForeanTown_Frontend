@@ -13,20 +13,18 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState, useContext } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Card from "../components/Card";
+
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
+import rootUrl from "../data/rootUrl";
 
 export default function Login() {
   const navigation = useNavigation();
   const { setUser } = useContext(AuthContext);
   const [input_email_value, set_input_email_value] = useState("");
   const [input_password_value, set_input_password_value] = useState("");
-
   const [emailErrMessage, setEmailErrMessage] = useState("");
-  //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
+  const [signInErrMessage, setSignInErrMessage] = useState("");
 
   const do_login = () => {
     console.log("do loginn");
@@ -36,32 +34,27 @@ export default function Login() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: input_email_value,
-        password: input_password_value,
+        email: "abc@gmail.com",
+        password: "adeade123",
+        // email: input_email_value,
+        // password: input_password_value,
       }),
     };
-    console.log(request_options);
-    fetch(`http://10.36.180.173:8000/users/login`, request_options)
+
+    fetch(`${rootUrl}/users/login`, request_options)
       .then((response) => {
-        console.log(response.status);
-        response.status >= 400
-          ? set_login_failed("이메일 또는 비밀번호가 잘못되었습니다.")
-          : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
-
-            response.json();
+        if (response.status >= 400) setSignInErrMessage(response.statusText);
+        return response.json();
       })
-      .then((res) => {
-        console.log("로그인 결과");
-        console.log(res);
+      .then((data) => {
+        //토큰 및 유저이름 저장
+        console.log("유저정보");
+        console.log(data);
+        // console.log(JSON.parse(data));
 
-        storeData("token", res);
-        setUser(res);
-        // localStorage.setItem("refresh_token", res.refresh_token);
-        // localStorage.setItem("access_token", res.access_token);
-        // localStorage.setItem("user_name", res.name + "님 안녕하세요");
-        // setTimeout(() => {
-        //   Router.push("/");
-        // }, 200);
+        storeData("accessToken", data.access_token);
+        storeData("refreshToken", data.refresh_token);
+        setUser(data.name);
       })
       .catch((err) => {
         console.log("에러: " + err);
@@ -70,50 +63,25 @@ export default function Login() {
 
   function handleEmailChange(e) {
     const spaceRemoved = e.replace(" ", "");
+
     const regex =
       /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
 
-    set_input_email_value(spaceRemoved);
     if (regex.test(spaceRemoved)) {
       setEmailErrMessage("");
     } else {
       setEmailErrMessage("이메일이 유효하지 않습니다");
     }
+
+    set_input_email_value(spaceRemoved);
   }
 
-  //   function handlePasswordChange(e) {
-  //     const regex =
-  //       /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-
-  //     set_input_email_value(e);
-  //     if (regex.test(e)) {
-  //       setEmailErrMessage("");
-  //     } else {
-  //       setEmailErrMessage("이메일이 유효하지 않습니다");
-  //     }
-  //   }
-
   const storeData = async (key, val) => {
-    console.log("_storeData");
     try {
       await AsyncStorage.setItem(key, val);
     } catch (error) {
       // Error saving data
       console.log(error);
-    }
-  };
-
-  const retrieveData = async (key) => {
-    console.log("_retrieve data");
-    try {
-      const value = await AsyncStorage.getItem(key);
-      if (value !== null) {
-        // We have data!!
-        console.log(value);
-      }
-    } catch (error) {
-      console.log(error);
-      // Error retrieving data
     }
   };
 
@@ -149,6 +117,7 @@ export default function Login() {
               }}
             />
           </View>
+          <Text>{signInErrMessage}</Text>
           <TouchableOpacity
             style={styles.postBtn}
             disabled={
@@ -157,10 +126,8 @@ export default function Login() {
                 : true
             }
             onPress={() => {
-              storeData("token", "qwert12");
-              setUser("Me");
               navigation.push("Main");
-              //   do_login();
+              do_login();
             }}
           >
             <Text style={styles.postTxt}>Sign In</Text>

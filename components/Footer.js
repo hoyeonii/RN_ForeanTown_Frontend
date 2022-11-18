@@ -21,6 +21,7 @@ function Footer() {
   useEffect(() => {
     retrieveData("token");
   }, []);
+
   const retrieveData = async (key) => {
     console.log("_retrieve data");
     try {
@@ -34,15 +35,7 @@ function Footer() {
     }
   };
 
-  const removeData = async (key) => {
-    console.log("removeData data");
-    try {
-      await AsyncStorage.removeItem(key);
-      console.log("done!!");
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
 
   const readAsyncData = async () => {
     try {
@@ -83,13 +76,13 @@ function Footer() {
           removeData("token");
           setUser(null);
         }}
-      />
+      />*/}
       <Button
         title="read"
         onPress={() => {
           readAsyncData();
         }}
-      /> */}
+      />
     </View>
   );
 }
