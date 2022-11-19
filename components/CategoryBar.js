@@ -1,13 +1,4 @@
-import {
-  Text,
-  SafeAreaView,
-  FlatList,
-  View,
-  StyleSheet,
-  TextInput,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 function CategoryBar({ selectedCategory, setSelectedCategory }) {
   const category = ["MeetUp", "Dating", "Language", "Hiring"];
@@ -44,33 +35,15 @@ function CategoryBar({ selectedCategory, setSelectedCategory }) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // width: "Dimensions.get('window').width",
-    // flex: 2,
     borderBottomWidth: 2,
     borderColor: "lightgray",
     borderRadius: 50,
-    // top: 0,
     flexDirection: "row",
     width: "100%",
     alignSelf: "center",
     justifyContent: "space-around",
-    // borderWidth: 2,
     padding: 5,
   },
-  // searchWrapper: {
-  //   // width: "100vw",
-  //   borderColor: "gray",
-  //   // borderWidth: 2,
-  //   // borderRadius: 30,
-  //   padding: 15,
-  //   margin: 5,
-  //   flexDirection: "row",
-  //   justifyContent: "space-between",
-  //   alignItems: "center",
-  // },
-  // searchBar: { width: "80%" },
   category: {
     paddingTop: 10,
     paddingBottom: 5,

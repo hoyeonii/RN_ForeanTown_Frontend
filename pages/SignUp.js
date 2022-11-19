@@ -1,36 +1,26 @@
-import { StatusBar } from "expo-status-bar";
 import {
-  Image,
-  ScrollView,
   StyleSheet,
   Text,
-  Button,
   TouchableOpacity,
-  SafeAreaView,
   View,
   TextInput,
   ImageBackground,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState, useContext } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Card from "../components/Card";
+import { useState, useContext } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
 import rootUrl from "../data/rootUrl";
+import { storeData } from "../components/HandleAsyncStorage";
 
 export default function SignUp() {
   const navigation = useNavigation();
-  const { setUser } = useContext(AuthContext);
-  const [input_name_value, set_input_name_value] = useState("");
-
+  const { setUser, setAccessToken } = useContext(AuthContext);
+  const [inputNameValue, setInputNameValue] = useState("");
   const [input_email_value, set_input_email_value] = useState("");
-  const [input_password_value, set_input_password_value] = useState("");
-  const [input_password2_value, set_input_password2_value] = useState("");
-
+  const [inputPasswordvalue, setInputPasswordvalue] = useState("");
+  const [inputPassword2Value, setInputPassword2Value] = useState("");
   const [emailErrMessage, setEmailErrMessage] = useState("");
-  //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
+  const [signupErrMessage, setSignupErrMessage] = useState("");
 
   const handleSignUp = () => {
     const request_options = {
@@ -39,40 +29,35 @@ export default function SignUp() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: input_name_value,
-        email: input_email_value,
-        password1: input_password_value,
-        password2: input_password2_value,
+        name: inputNameValue,
+        email: inputEmailValue,
+        password1: inputPasswordValue,
+        password2: inputPassword2Value,
       }),
     };
-    console.log(request_options);
 
     fetch(`${rootUrl}/users/signup`, request_options)
       .then((response) => {
-        console.log(response.headers);
-        console.log("ok" + response.ok);
-        console.log("statusText" + response.statusText);
-        console.log("message" + response.message);
+        // console.log(response.headers);
+        // console.log("ok" + response.ok);
+        // console.log("statusText" + response.statusText);
+        // console.log("message" + response.message);
 
-        response.status >= 400
-          ? console.log("뭔가가 잘못됐으")
-          : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
+        if (response.ok) navigation.push("Additional");
 
-            response.json();
+        return response.json();
       })
       .then((res) => {
         console.log("회원가입 결과");
         console.log(res);
-
-        // storeData("token", res);
-        // setUser(res);
-
-        // localStorage.setItem("refresh_token", res.refresh_token);
-        // localStorage.setItem("access_token", res.access_token);
-        // localStorage.setItem("user_name", res.name + "님 안녕하세요");
-        // setTimeout(() => {
-        //   Router.push("/");
-        // }, 200);
+        if (res.access_token) {
+          storeData("accessToken", res.access_token);
+          storeData("refreshToken", res.refresh_token);
+          setUser(res.name);
+          setAccessToken(res.access_token);
+        }
+        if (res.password1) setSignupErrMessage(res.password1[0]);
+        if (res.email) setSignupErrMessage(res.email[0]);
       })
       .catch((err) => {
         console.log("에러: " + err);
@@ -92,30 +77,6 @@ export default function SignUp() {
     }
   }
 
-  const storeData = async (key, val) => {
-    console.log("_storeData");
-    try {
-      await AsyncStorage.setItem(key, val);
-    } catch (error) {
-      // Error saving data
-      console.log(error);
-    }
-  };
-
-  // const retrieveData = async (key) => {
-  //   console.log("_retrieve data");
-  //   try {
-  //     const value = await AsyncStorage.getItem(key);
-  //     if (value !== null) {
-  //       // We have data!!
-  //       console.log(value);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     // Error retrieving data
-  //   }
-  // };
-
   return (
     <ImageBackground
       source={require("../assets/bg3.jpg")}
@@ -131,7 +92,7 @@ export default function SignUp() {
               style={styles.textInput}
               value={input_name_value}
               onChangeText={(e) => {
-                set_input_name_value(e);
+                setInputNameValue(e);
               }}
             />
           </View>
@@ -156,7 +117,7 @@ export default function SignUp() {
               value={input_password_value}
               secureTextEntry={true} //비밀번호 ** 처리
               onChangeText={(e) => {
-                set_input_password_value(e);
+                setInputPasswordValue(e);
               }}
             />
           </View>
@@ -167,7 +128,7 @@ export default function SignUp() {
               value={input_password2_value}
               secureTextEntry={true}
               onChangeText={(e) => {
-                set_input_password2_value(e);
+                setInputPassword2Value(e);
                 console.log(input_password_value.length);
               }}
             />
@@ -179,6 +140,7 @@ export default function SignUp() {
                 : ""}
             </Text>
           </View>
+          <Text style={styles.warningText}>{signupErrMessage}</Text>
           <TouchableOpacity
             style={styles.postBtn}
             disabled={
@@ -192,16 +154,10 @@ export default function SignUp() {
             }
             onPress={() => {
               handleSignUp();
-              navigation.push("Additional");
             }}
           >
             <Text style={styles.postTxt}>Sign Up</Text>
           </TouchableOpacity>
-
-          {/* <Button
-            title="Additional"
-            onPress={() => navigation.push("Additional")}
-          /> */}
         </View>
       </View>
     </ImageBackground>
@@ -211,18 +167,11 @@ export default function SignUp() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-    // alignContent: "center",
     flexDirection: "row",
-
     marginTop: 40,
     padding: 30,
-    // borderWidth: 3,
-
-    // borderWidth: 1,
   },
   innercontainer: {
-    // borderWidth: 3,
     width: "100%",
     alignSelf: "center",
   },

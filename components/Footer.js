@@ -18,24 +18,22 @@ function Footer() {
   const { user, setUser } = useContext(AuthContext);
   // 나중에 createBottomTabNavigator로 구현해보기!
   const navigation = useNavigation();
-  useEffect(() => {
-    retrieveData("token");
-  }, []);
 
-  const retrieveData = async (key) => {
-    console.log("_retrieve data");
+  // useEffect(() => {
+  //   // retrieveData();
+  // }, []);
+
+  (async function retrieveData() {
     try {
-      const value = await AsyncStorage.getItem(key);
+      const value = await AsyncStorage.getItem("user");
       if (value !== null) {
-        setUser(true);
+        setUser(value);
         console.log(value);
       }
     } catch (error) {
       console.log(error);
     }
-  };
-
-
+  })();
 
   const readAsyncData = async () => {
     try {
@@ -70,13 +68,7 @@ function Footer() {
         // name={user ? "user" : "nonpe"}
         name={user ? user : "로그인"}
       />
-      {/* <Button
-        title="clear"
-        onPress={() => {
-          removeData("token");
-          setUser(null);
-        }}
-      />*/}
+
       <Button
         title="read"
         onPress={() => {

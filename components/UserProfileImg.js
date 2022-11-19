@@ -1,10 +1,14 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import React from "react";
+import defaultUserProfilePic from "../assets/defaultUserProfilePic.jpg";
 
 const UserProfileImg = ({ img }) => {
   return (
     <View style={styles.imgWrapper}>
-      <Image style={styles.profilePic} source={{ uri: img }} />
+      <Image
+        style={styles.profilePic}
+        source={img ? { uri: img } : defaultUserProfilePic}
+      />
       <Image
         style={styles.countryFlag}
         source={{

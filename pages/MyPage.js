@@ -3,8 +3,6 @@ import {
   Text,
   Button,
   StyleSheet,
-  Image,
-  StatusBar,
   TouchableOpacity,
   ScrollView,
   ImageBackground,
@@ -12,73 +10,48 @@ import {
 import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../App";
 import Card from "../components/Card";
-import { gather_rooms, userData } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
 import { useNavigation } from "@react-navigation/core";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import rootUrl from "../data/rootUrl";
+import { removeData } from "../components/HandleAsyncStorage";
 
 export default function MyPage() {
-  const [data, setData] = useState([]);
-  const { user, setUser } = useContext(AuthContext);
+  const [myList, setMyList] = useState([]);
+  const [myInfo, setmyInfo] = useState({});
+  const { setUser, accessToken } = useContext(AuthContext);
   const [showRoomof, setShowRoomOf] = useState("Created");
   const navigation = useNavigation();
 
-  const loadData = () => {
-    const requestOption = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        // Authentication: "bearer " + "",
-      },
-    };
-
-    fetch(`${rootUrl}/foreatown/gather-room/mylist`, requestOption)
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        console.log("우왕");
-        // console.log(data);
-      })
-      .catch((err) => console.log(err));
-  };
-  ///users/my-info
-
-  const loadMyInfo = () => {
-    const requestOption = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authentication: "bearer " + "",
-      },
-    };
-    console.log("오와앙");
-
-    fetch(`${rootUrl}/users/my-info`, requestOption)
-      .then((res) => res.json())
-      .then((data) => {
-        // setData(data);
-        // console.log("MyInfo");
-        console.log("rfwf" + data);
-      })
-      .catch((err) => console.log(err));
-  };
-
   useEffect(() => {
-    // loadData();
+    loadMyList();
     loadMyInfo();
   }, []);
 
-  const removeData = async (key) => {
-    console.log("removeData data");
-    try {
-      await AsyncStorage.removeItem(key);
-
-      console.log("done!!");
-    } catch (error) {
-      console.log(error);
-    }
+  const requestOption = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + accessToken,
+    },
   };
+
+  function loadMyList() {
+    fetch(`${rootUrl}/foreatown/gather-room/mylist`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        setMyList(data);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function loadMyInfo() {
+    fetch(`${rootUrl}/users/myinfo`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        setmyInfo(data);
+      })
+      .catch((err) => console.log(err));
+  }
 
   return (
     <ImageBackground
@@ -88,28 +61,24 @@ export default function MyPage() {
     >
       <View style={styles.container}>
         <Text style={styles.title}>My Town</Text>
-        {/* <Text>{user} Page</Text> */}
         <View style={styles.profile}>
           <View>
-            <Text style={styles.userName}>{userData.nickname}</Text>
+            <Text style={styles.userName}>{myInfo?.nickname}</Text>
             <Text style={styles.userAgeNSex}>
               {" "}
-              {userData.age} {userData.is_male ? "♂" : "♀"}
+              {myInfo?.age} {myInfo?.is_male ? "♂" : "♀"} |{" "}
+              {myInfo?.country?.name} | {myInfo?.location}
             </Text>
             <TouchableOpacity onPress={() => navigation.push("Chat")}>
               <Text style={styles.messageBtn}>Message</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.push("Additional")}>
+              <Text style={styles.messageBtn}>Edit</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.userPic}>
-            <UserProfileImg img={userData.profile_img_url} />
+            <UserProfileImg img={myInfo?.profile_img_url} />
           </View>
-
-          {/* <Image
-          style={styles.userPic}
-          source={{
-            uri: userData.profile_img_url,
-          }}
-        /> */}
         </View>
         <View style={styles.myRoom}>
           <View style={styles.roomBtn}>
@@ -148,7 +117,7 @@ export default function MyPage() {
           {/* {방 맵핑해서 보여주기} */}
           <View style={styles.rooms}>
             <ScrollView style={styles.roomsScroll}>
-              {data
+              {myList
                 // .filter((el) => el.creator_id === 1)
                 .map((el, i) => (
                   <Card item={el} key={i} />
@@ -165,12 +134,6 @@ export default function MyPage() {
             </ScrollView>
           </View>
         </View>
-        {/* <Button
-        title="Log Out"
-        onPress={() => {
-          setUser(null);
-        }}
-      /> */}
       </View>
     </ImageBackground>
   );

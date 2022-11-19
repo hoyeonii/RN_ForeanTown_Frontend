@@ -17,27 +17,28 @@ import { useEffect, useState, useContext } from "react";
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
 import rootUrl from "../data/rootUrl";
+import { storeData } from "../components/HandleAsyncStorage";
 
 export default function Login() {
-  const navigation = useNavigation();
-  const { setUser } = useContext(AuthContext);
-  const [input_email_value, set_input_email_value] = useState("");
-  const [input_password_value, set_input_password_value] = useState("");
+  const navigate = useNavigation();
+  const { setUser, setAccessToken } = useContext(AuthContext);
+  const [input_email_value, setInputEmailValue] = useState("");
+  const [input_password_value, setInputPasswordValue] = useState("");
   const [emailErrMessage, setEmailErrMessage] = useState("");
   const [signInErrMessage, setSignInErrMessage] = useState("");
 
-  const do_login = () => {
-    console.log("do loginn");
+  const handleSignIn = () => {
+    console.log("signIn");
     const request_options = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: "abc@gmail.com",
-        password: "adeade123",
-        // email: input_email_value,
-        // password: input_password_value,
+        // email: "abc@gmail.com",
+        // password: "adeade123",
+        email: input_email_value,
+        password: input_password_value,
       }),
     };
 
@@ -47,14 +48,13 @@ export default function Login() {
         return response.json();
       })
       .then((data) => {
-        //토큰 및 유저이름 저장
-        console.log("유저정보");
-        console.log(data);
-        // console.log(JSON.parse(data));
-
         storeData("accessToken", data.access_token);
         storeData("refreshToken", data.refresh_token);
+        storeData("user", data.name);
         setUser(data.name);
+        setAccessToken(data.access_token);
+
+        navigate.push("Main");
       })
       .catch((err) => {
         console.log("에러: " + err);
@@ -63,7 +63,6 @@ export default function Login() {
 
   function handleEmailChange(e) {
     const spaceRemoved = e.replace(" ", "");
-
     const regex =
       /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
 
@@ -73,17 +72,8 @@ export default function Login() {
       setEmailErrMessage("이메일이 유효하지 않습니다");
     }
 
-    set_input_email_value(spaceRemoved);
+    setInputEmailValue(spaceRemoved);
   }
-
-  const storeData = async (key, val) => {
-    try {
-      await AsyncStorage.setItem(key, val);
-    } catch (error) {
-      // Error saving data
-      console.log(error);
-    }
-  };
 
   return (
     <ImageBackground
@@ -113,7 +103,7 @@ export default function Login() {
               value={input_password_value}
               secureTextEntry={true} //비밀번호 ** 처리
               onChangeText={(e) => {
-                set_input_password_value(e);
+                setInputPasswordValue(e);
               }}
             />
           </View>
@@ -126,28 +116,19 @@ export default function Login() {
                 : true
             }
             onPress={() => {
-              navigation.push("Main");
-              do_login();
+              handleSignIn();
             }}
           >
             <Text style={styles.postTxt}>Sign In</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              navigation.push("SignUp");
+              navigate.push("SignUp");
             }}
           >
             <Text style={styles.notRegisteredBtn}>Not registered yet?</Text>
           </TouchableOpacity>
-          {/* <Button
-            title="storeData(현재 로그인버튼)"
-            onPress={() => {
-              storeData("token", "qwert12");
-              setUser("Me");
-              navigation.push("Main");
-            }}
-          />
-          <Button title="retrieveData" onPress={() => retrieveData("token")} /> */}
+
         </View>
       </View>
     </ImageBackground>
@@ -157,15 +138,9 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-    // alignContent: "center",
     flexDirection: "row",
-
     marginTop: 40,
     padding: 30,
-    // borderWidth: 3,
-
-    // borderWidth: 1,
   },
   innercontainer: {
     // borderWidth: 3,

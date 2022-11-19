@@ -1,16 +1,4 @@
-import {
-  Text,
-  SafeAreaView,
-  FlatList,
-  View,
-  StyleSheet,
-  TextInput,
-  Dimensions,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { useState } from "react";
-import Icon from "react-native-vector-icons/AntDesign";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 
 function Card({ item }) {
@@ -34,12 +22,6 @@ function Card({ item }) {
       style={styles.item}
       onPress={() => navigation.push("Detail", { id: item.id })}
     >
-      {/* <Image
-        style={styles.thumbnail}
-        source={{
-          uri: item.fields.medium_url,
-        }}
-      /> */}
       <Text style={styles.heartIcon}>❤</Text>
       <View style={styles.detail}>
         <Text style={styles.category}>
@@ -47,10 +29,12 @@ function Card({ item }) {
         </Text>
         <View style={styles.detailUpper}>
           <Text style={styles.textBold}>{item.subject}</Text>
-          {/* <Text style={styles.text}>{item.content}</Text> */}
-          <Text style={styles.text}>
-            📅 {item.date_time && item.date_time.split("T")[0]}
-          </Text>
+          {item.gather_room_category !== 2 &&
+            item.gather_room_category !== 3 && (
+              <Text style={styles.text}>
+                📅 {item.date_time && item.date_time.split("T")[0]}
+              </Text>
+            )}
           <Text style={styles.text}>
             <Text style={styles.isOnlineTxt}>
               {item.is_online ? " on " : " off "}
@@ -71,8 +55,6 @@ const styles = StyleSheet.create({
   item: {
     alignItems: "center",
     marginVertical: 15,
-    // marginHorizontal: 30,
-    // borderWidth: 1,
     borderRadius: 10,
     borderColor: "gray",
     padding: 20,
@@ -96,14 +78,8 @@ const styles = StyleSheet.create({
   },
 
   detail: {
-    // borderWidth: 2,
     width: "100%",
-
-    // flexDirection: "row",
-    // justifyContent: "space-between",
   },
-  // detailLeft: { width: "80%" },
-  //   detailRight: { borderWidth: 2 },
 
   detailUnder: {
     flexDirection: "row",
@@ -128,8 +104,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "gray",
-    // paddingBottom: 10,
-    // overflow: "wrap",
   },
   isOnlineTxt: {
     backgroundColor: "#6685FF",

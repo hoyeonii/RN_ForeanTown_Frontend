@@ -9,7 +9,8 @@ import {
   ImageBackground,
   Image,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../App";
 import FormData from "form-data";
 import data from "../data/countries";
 import CategoryBar from "../components/CategoryBar";
@@ -28,18 +29,19 @@ export default function Post() {
   const [inputWhen, setInputWhen] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   showDatePicker;
-  const [inputOnline, setInputOnline] = useState("Online");
+  const [inputOnline, setInputOnline] = useState(true);
   const [inputWhere, setInputWhere] = useState(null);
-  const [inputWho, setInputWho] = useState(1);
+  const [inputWho, setInputWho] = useState(2);
   const [inputDetail, setInputDetail] = useState("");
   const [imageArr, setImageArr] = useState([]);
-  const [accessToken, setAccessToken] = useState([]);
-  setAccessToken;
+  // const [accessToken, setAccessToken] = useState([]);
   const navigate = useNavigation();
+  const { setUser, accessToken, user } = useContext(AuthContext);
+  const formData = new FormData();
 
-  useEffect(() => {
-    checkAccessToken("accessToken");
-  }, []);
+  // useEffect(() => {
+  //   checkAccessToken("accessToken");
+  // }, []);
 
   const offlineLocation = [
     "HongDae",
@@ -59,33 +61,27 @@ export default function Post() {
   ];
 
   function handlePost() {
-    const formData = new FormData();
-    // formData.append("subject", inputTitle);
-    // formData.append("content", inputDetail);
-    // formData.append("address", inputWhere);
-    // formData.append("is_online", inputOnline);
-    // formData.append("user_limit", inputWho);
-    // formData.append("date_time", inputWhen);
-    // formData.append("gather_room_category", selectedCategory);
-
-    formData.append("subject", "제목테스트");
-    formData.append("content", "내용테스트");
-    formData.append("address", inputOnline ? null : inputWhere);
-    formData.append("is_online", true);
-    formData.append("user_limit", 5);
-    formData.append("date_time", editDateForm(inputWhen));
-    //  "2021-06-25 17:00:00");
-    formData.append("gather_room_category", "Language");
-
+    formData.append("subject", inputTitle);
+    formData.append("content", inputDetail);
+    formData.append("address", inputWhere);
+    formData.append("is_online", inputOnline ? "True" : "False");
+    formData.append("user_limit", inputWho);
+    formData.append("date_time", editDateForm(inputWhen) + " 17:00:00");
+    formData.append("gather_room_category", categoryIdtoName(selectedCategory));
     appendImage(imageArr);
+    // formData.append("subject", "제목테스트");
+    // formData.append("content", "내용테스트");
+    // formData.append("address", inputOnline ? null : inputWhere);
+    // formData.append("is_online", true);
+    // formData.append("user_limit", 5);
+    // formData.append("date_time", editDateForm(inputWhen) + " 17:00:00");
+    // //  "2021-06-25 17:00:00");
+    // formData.append("gather_room_category", "Language");
 
-    // fetch(`${rootUrl}/foreatown/gather-room`, {
+    // console.log("토큰여기" + accessToken);
+    // console.log(formData);
 
-    console.log("토큰여기" + accessToken);
-    console.log("폼데이터" + formData);
-    console.log(formData);
-
-    fetch(`https://api.foreatown.com/foreatown/gather-room`, {
+    const requestOption = {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -94,17 +90,20 @@ export default function Post() {
         Authorization: "Bearer " + accessToken,
       },
       body: formData,
-    })
-      .then((res) => res.json())
-      // .then((data) => Router.push(`/post/${data.id}`))
+    };
+
+    fetch(`${rootUrl}/foreatown/gather-room`, requestOption)
+      .then((res) => {
+        console.log(res.ok);
+        if (res.ok) navigate.push("Main");
+        return res.json();
+      })
       .then((data) => {
         console.log(data);
         // navigate.push(`Main`)
       })
-
       .catch((err) => {
         console.log("에러");
-
         console.log(err);
       });
   }
@@ -118,22 +117,7 @@ export default function Post() {
     }
   }
 
-  const checkAccessToken = async (key) => {
-    try {
-      const value = await AsyncStorage.getItem(key);
-      if (value !== null) {
-        console.log("밸류" + value);
-        setAccessToken(value);
-      } else {
-        console.log("Sign In first");
-        navigate.push("Login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const pickImage = async () => {
+  async function pickImage() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -144,18 +128,208 @@ export default function Post() {
     if (!result.cancelled) {
       setImageArr([...imageArr, result.uri]);
     }
-  };
-  //  "2021-06-25 17:00:00");
+  }
+
   function editDateForm(date) {
     const newDate = new Date(date);
+
+    console.log("editDateed" + date);
+    console.log("editDateed" + newDate);
+    return [
+      newDate.getFullYear(),
+      newDate.getMonth() + 1,
+      newDate.getDate(),
+    ].join("-");
+  }
+
+  function categoryIdtoName(id) {
+    switch (id) {
+      case 1:
+        return "MeetUp";
+      case 2:
+        return "Dating";
+      case 3:
+        return "Language";
+      default:
+        return "Hiring";
+    }
+  }
+
+  //Components
+  function FieldWhen() {
     return (
-      [newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate()].join(
-        "-"
-      ) +
-      " " +
-      [newDate.getHours(), newDate.getMinutes() + 6, newDate.getSeconds()].join(
-        ":"
+      (selectedCategory === 1 || selectedCategory === 4) && (
+        <TouchableOpacity
+          onPress={() => {
+            setShowDatePicker(true);
+          }}
+          style={styles.inputBox}
+        >
+          <Text style={styles.textBold}>When</Text>
+          <Text style={styles.textInput}>{editDateForm(inputWhen)}</Text>
+          {showDatePicker && (
+            <RNDateTimePicker
+              value={new Date()}
+              mode="date"
+              minimumDate={new Date()}
+              onChange={(e) => {
+                console.log("날짜 선택");
+                console.log(e.nativeEvent.timestamp);
+                e.nativeEvent.timestamp &&
+                  setInputWhen(e.nativeEvent.timestamp);
+                setShowDatePicker(false);
+              }}
+            />
+          )}
+        </TouchableOpacity>
       )
+    );
+  }
+
+  function FieldWhere() {
+    return (
+      <View style={styles.inputBox}>
+        <Text style={styles.textBold}>Where</Text>
+        <View style={styles.inputOnlineWrapper}>
+          <TouchableOpacity
+            style={
+              inputOnline ? styles.inputOnlineSelected : styles.inputOnline
+            }
+            onPress={() => {
+              setInputOnline(true);
+              setInputWhere(null);
+            }}
+          >
+            <Text
+              style={
+                inputOnline
+                  ? styles.inputOnlineSelectedTxt
+                  : styles.inputOnlineTxt
+              }
+            >
+              Online
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={
+              !inputOnline ? styles.inputOnlineSelected : styles.inputOnline
+            }
+            onPress={() => {
+              setInputOnline(false);
+              setInputWhere(null);
+            }}
+          >
+            <Text
+              style={
+                !inputOnline
+                  ? styles.inputOnlineSelectedTxt
+                  : styles.inputOnlineTxt
+              }
+            >
+              Offline
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <SelectDropdown
+          style={styles.dropDown}
+          data={!inputOnline && offlineLocation}
+          defaultButtonText={
+            inputOnline
+              ? "Will be randomly assigned"
+              : inputWhere || "Select Location"
+          }
+          disabled={!inputOnline ? false : true}
+          buttonTextAfterSelection={(selectedItem, index) => {
+            console.log(selectedItem);
+            setInputWhere(selectedItem);
+            return selectedItem;
+          }}
+          buttonStyle={styles.dropdown1BtnStyle}
+          buttonTextStyle={styles.dropdown1BtnTxtStyle}
+          dropdownStyle={styles.dropdown1DropdownStyle}
+          rowStyle={styles.dropdown1RowStyle}
+          rowTextStyle={styles.dropdown1RowTxtStyle}
+        />
+      </View>
+    );
+  }
+
+  function FieldWho() {
+    return (
+      <View style={styles.inputBox}>
+        <Text style={styles.textBold}>Who's coming</Text>
+        <View style={[styles.whoWrapper, styles.textInput]}>
+          <Button
+            color="#8587DC"
+            title="        -       "
+            onPress={() => {
+              if (inputWho > 2) setInputWho((prep) => --prep);
+            }}
+          />
+          <Text style={styles.textWho}>{inputWho}</Text>
+          <Button
+            color="#8587DC"
+            title="       +       "
+            onPress={() => {
+              if (inputWho < 25) setInputWho((prep) => ++prep);
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  function FieldDetails() {
+    return (
+      <View style={styles.inputBox}>
+        <Text style={styles.textBold}>Details</Text>
+        <TextInput
+          style={[styles.textInput, styles.longInput]}
+          // onChangeText={(e) => console.log(e)}
+          value={inputDetail}
+          onChangeText={(e) => {
+            setInputDetail(e);
+          }}
+          multiline={true}
+          numberOfLines={6}
+        />
+      </View>
+    );
+  }
+
+  function FieldAttachment() {
+    return (
+      <View>
+        <TouchableOpacity
+          style={styles.attachmentBtn}
+          onPress={pickImage}
+          disabled={imageArr.length < 3 ? false : true}
+        >
+          <Text>{`Add Image (${imageArr.length}/3)`}</Text>
+        </TouchableOpacity>
+        <ScrollView style={styles.attachmentWrapper} horizontal={true}>
+          {imageArr &&
+            imageArr.map((img, i) => (
+              <View key={i}>
+                <Image source={{ uri: img }} style={styles.attachment} />
+                <TouchableOpacity
+                  style={styles.attachmentDeleteBtn}
+                  onPress={() => {
+                    console.log(i);
+
+                    let copiedImg = [...imageArr];
+                    copiedImg.splice(i, 1);
+                    console.log(imageArr);
+                    setImageArr(copiedImg);
+                  }}
+                >
+                  <Text>X</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+        </ScrollView>
+      </View>
     );
   }
 
@@ -168,6 +342,8 @@ export default function Post() {
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Post</Text>
+          {/* <Text>{user}</Text>
+          <Text>{accessToken}</Text> */}
           <CategoryBar
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
@@ -177,11 +353,17 @@ export default function Post() {
             <TextInput
               style={styles.textInput}
               maxLength={60}
-              onChangeText={(e) => setInputTitle(e)}
+              value={inputTitle}
+              onChangeText={(e) => {
+                // e.preventDefault();
+                setInputTitle(e);
+              }}
             />
           </View>
 
-          {(selectedCategory === 1 || selectedCategory === 4) && (
+          <FieldWhen />
+
+          {/* {(selectedCategory === 1 || selectedCategory === 4) && (
             <TouchableOpacity
               onPress={() => {
                 setShowDatePicker(true);
@@ -189,152 +371,31 @@ export default function Post() {
               style={styles.inputBox}
             >
               <Text style={styles.textBold}>When</Text>
-              <Text style={styles.textInput}>{`${new Date(
-                inputWhen
-              ).getFullYear()}-${new Date(inputWhen).getMonth() + 1}-${new Date(
-                inputWhen
-              ).getDate()}`}</Text>
+              <Text style={styles.textInput}>
+                {/* {inputWhen} 
+                {editDateForm(inputWhen)}
+              </Text>
               {showDatePicker && (
                 <RNDateTimePicker
                   value={new Date()}
                   mode="date"
-                  // minimumDate={new Date()}
-                  // maximumDate={new Date(2023, 0, 1)}
+                  minimumDate={new Date()}
                   onChange={(e) => {
-                    setInputWhen(e.nativeEvent.timestamp);
+                    console.log("날짜 선택");
+                    console.log(e.nativeEvent.timestamp);
                     setShowDatePicker(false);
+                    e.nativeEvent.timestamp &&
+                      setInputWhen(e.nativeEvent.timestamp);
                   }}
                 />
               )}
-              {/* <Text>{inputWhen}</Text> */}
             </TouchableOpacity>
-          )}
+          )} */}
 
-          <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Where</Text>
-            <View style={styles.inputOnlineWrapper}>
-              <TouchableOpacity
-                style={
-                  inputOnline === "Online"
-                    ? styles.inputOnlineSelected
-                    : styles.inputOnline
-                }
-                onPress={() => {
-                  setInputOnline("Online");
-                  setInputWhere(null);
-                }}
-              >
-                <Text
-                  style={
-                    inputOnline === "Online"
-                      ? styles.inputOnlineSelectedTxt
-                      : styles.inputOnlineTxt
-                  }
-                >
-                  Online
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={
-                  inputOnline === "Offline"
-                    ? styles.inputOnlineSelected
-                    : styles.inputOnline
-                }
-                onPress={() => {
-                  setInputOnline("Offline");
-                  setInputWhere(null);
-                }}
-              >
-                <Text
-                  style={
-                    inputOnline === "Offline"
-                      ? styles.inputOnlineSelectedTxt
-                      : styles.inputOnlineTxt
-                  }
-                >
-                  Offline
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <SelectDropdown
-              style={styles.dropDown}
-              data={inputOnline === "Offline" && offlineLocation}
-              defaultButtonText={
-                inputOnline === "Online"
-                  ? "Will be randomly assigned"
-                  : "Select Location"
-              }
-              disabled={inputOnline === "Offline" ? false : true}
-              buttonTextAfterSelection={(selectedItem, index) => {
-                setInputWhere(selectedItem);
-                return selectedItem;
-              }}
-              buttonStyle={styles.dropdown1BtnStyle}
-              buttonTextStyle={styles.dropdown1BtnTxtStyle}
-              dropdownStyle={styles.dropdown1DropdownStyle}
-              rowStyle={styles.dropdown1RowStyle}
-              rowTextStyle={styles.dropdown1RowTxtStyle}
-            />
-          </View>
-          <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Who's coming</Text>
-            <View style={[styles.whoWrapper, styles.textInput]}>
-              <Button
-                color="#8587DC"
-                title="        -       "
-                onPress={() => {
-                  if (inputWho > 1) setInputWho((prep) => --prep);
-                }}
-              />
-              <Text style={styles.textWho}>{inputWho}</Text>
-              <Button
-                color="#8587DC"
-                title="       +       "
-                onPress={() => {
-                  if (inputWho < 25) setInputWho((prep) => ++prep);
-                }}
-              />
-            </View>
-          </View>
-
-          <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Details</Text>
-            <TextInput
-              style={[styles.textInput, styles.longInput]}
-              onChangeText={(e) => setInputDetail(e)}
-              multiline={true}
-              numberOfLines={6}
-            />
-          </View>
-          {/* <Button title="이미지 선택" onPress={showPicker} /> */}
-          <TouchableOpacity
-            style={styles.attachmentBtn}
-            onPress={pickImage}
-            disabled={imageArr.length < 3 ? false : true}
-          >
-            <Text>{`Add Image (${imageArr.length}/3)`}</Text>
-          </TouchableOpacity>
-          <ScrollView style={styles.attachmentWrapper} horizontal={true}>
-            {imageArr &&
-              imageArr.map((img, i) => (
-                <View key={i}>
-                  <Image source={{ uri: img }} style={styles.attachment} />
-                  <TouchableOpacity
-                    style={styles.attachmentDeleteBtn}
-                    onPress={() => {
-                      console.log(i);
-
-                      let copiedImg = [...imageArr];
-                      copiedImg.splice(i, 1);
-                      console.log(imageArr);
-                      setImageArr(copiedImg);
-                    }}
-                  >
-                    <Text>X</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-          </ScrollView>
+          <FieldWhere />
+          <FieldWho />
+          <FieldDetails />
+          <FieldAttachment />
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
@@ -348,6 +409,7 @@ export default function Post() {
     </ImageBackground>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

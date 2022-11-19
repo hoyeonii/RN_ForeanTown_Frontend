@@ -20,30 +20,32 @@ export const AuthContext = createContext();
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
-    retrieveData("token");
+    retrieveData("accessToken", setAccessToken);
+    retrieveData("user", setUser);
   }, []);
 
-  const retrieveData = async (key) => {
+  const retrieveData = async (key, setState) => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
-        // We have data!!
-        setUser(value);
+        setState(value);
         console.log("logged in" + value);
       } else {
-        setUser("Log In");
+        setState("Log In");
         console.log("not logged in" + value);
       }
     } catch (error) {
       console.log(error);
-      // Error retrieving data
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider
+      value={{ user, setUser, accessToken, setAccessToken }}
+    >
       <AppNav />
     </AuthContext.Provider>
   );
