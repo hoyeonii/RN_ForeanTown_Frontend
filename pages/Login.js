@@ -11,7 +11,6 @@ import {
   TextInput,
   ImageBackground,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState, useContext } from "react";
 
 import { useNavigation } from "@react-navigation/core";
@@ -48,6 +47,7 @@ export default function Login() {
         return response.json();
       })
       .then((data) => {
+        console.log(data);
         storeData("accessToken", data.access_token);
         storeData("refreshToken", data.refresh_token);
         storeData("user", data.name);
@@ -128,7 +128,6 @@ export default function Login() {
           >
             <Text style={styles.notRegisteredBtn}>Not registered yet?</Text>
           </TouchableOpacity>
-
         </View>
       </View>
     </ImageBackground>

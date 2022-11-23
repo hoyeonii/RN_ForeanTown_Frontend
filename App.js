@@ -20,6 +20,7 @@ export const AuthContext = createContext();
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(21);
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function App() {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, accessToken, setAccessToken }}
+      value={{ user, setUser, accessToken, setAccessToken, userId, setUserId }}
     >
       <AppNav />
     </AuthContext.Provider>

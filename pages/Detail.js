@@ -11,16 +11,23 @@ import {
   ScrollView,
   Modal,
 } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { gather_rooms } from "../data/dummydata";
 import UserProfileImg from "../components/UserProfileImg";
 import rootUrl from "../data/rootUrl";
 import ShowImage from "../components/ShowImage";
+import { AuthContext } from "../App";
+import Post from "./Post";
+import { useNavigation } from "@react-navigation/core";
 
 function Detail({ route }) {
   const [data, setData] = useState("");
   const [showImageUri, setShowImageUri] = useState(null);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const { user, setUser, accessToken, userId } = useContext(AuthContext);
+  const navigate = useNavigation();
+
   const images = [
     "https://media.istockphoto.com/id/1328831714/photo/portrait-of-a-smiling-young-african-woman.jpg?b=1&s=170667a&w=0&k=20&c=SYNQ3l6j6KKUyGMc71nMfjzscuVL7_HEXRIN9BOE0fw=",
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwyJXiHvSHXuLVSOLV7CYiHk0gUpsLlJZk1RjorToy&s",
@@ -64,6 +71,51 @@ function Detail({ route }) {
       case 4:
         return "🤑 Hiring";
     }
+  }
+
+  function handleDelete() {
+    console.log(data.id);
+    const requestOption = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+
+    fetch(`${rootUrl}/foreatown/gather-room/${data.id}`, requestOption)
+      .then((res) => {
+        console.log(res.status);
+        console.log("삭제완료!", data.id, data.subject);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => navigate.push("Main"));
+  }
+
+  function DeleteModal() {
+    return (
+      <View style={styles.deleteModalWrapper}>
+        <View style={styles.deleteModal}>
+          <Text style={styles.deleteModalTxt}>
+            Do you want to delete the post?
+          </Text>
+          <View style={styles.deleteModalBtn}>
+            <TouchableOpacity
+              style={styles.joinBtn}
+              onPress={() => setOpenDeleteModal(false)}
+            >
+              <Text style={styles.joinBtnTxt}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.joinBtn}
+              onPress={() => handleDelete()}
+            >
+              <Text style={styles.joinBtnTxt}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
   }
 
   return (
@@ -114,19 +166,16 @@ function Detail({ route }) {
         </View>
         <View style={styles.section}>
           <Text style={styles.fontM}>Host{showImageUri}</Text>
-          <View style={styles.hostInfoWrapper}>
+          <TouchableOpacity
+            style={styles.hostInfoWrapper}
+            onPress={() => navigate.push("MyPage", { state: data.creator.id })}
+          >
             <View style={styles.userPic}>
               <UserProfileImg img={data.creator?.profile_img_url} />
             </View>
-            <TouchableOpacity
-              onPress={() => {
-                //누르면 유저 프로필로 이동
-                //data.creator.id 사용
-              }}
-            >
-              <Text style={styles.hostNameText}>{data.creator?.name}</Text>
-            </TouchableOpacity>
-          </View>
+
+            <Text style={styles.hostNameText}>{data.creator?.name}</Text>
+          </TouchableOpacity>
 
           {/* //아직 참여자가 없을때는 안보여짐 */}
           {data.participants?.length > 0 && (
@@ -146,9 +195,18 @@ function Detail({ route }) {
             <TouchableOpacity style={styles.joinBtn}>
               <Text style={styles.joinBtnTxt}>Message</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.joinBtn}>
-              <Text style={styles.joinBtnTxt}>Join</Text>
-            </TouchableOpacity>
+            {data?.creator?.id !== userId ? (
+              <TouchableOpacity style={styles.joinBtn}>
+                <Text style={styles.joinBtnTxt}>Join</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.joinBtn}
+                onPress={() => setOpenDeleteModal(true)}
+              >
+                <Text style={styles.joinBtnTxt}>Delete</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -158,6 +216,7 @@ function Detail({ route }) {
           setShowImageUri={setShowImageUri}
         />
       )}
+      {openDeleteModal && <DeleteModal />}
     </View>
   );
 }
@@ -170,6 +229,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderColor: "red",
   },
+  deleteModalWrapper: {
+    marginHorizontal: 30,
+    position: "absolute",
+    backgroundColor: "white",
+    opacity: 0.9,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+  },
+  deleteModal: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#8587DC",
+    padding: 20,
+  },
+  deleteModalTxt: { fontSize: 15, textAlign: "center", marginBottom: 20 },
+  deleteModalBtn: { flexDirection: "row", justifyContent: "space-between" },
   title: {
     fontWeight: "bold",
     fontSize: 20,

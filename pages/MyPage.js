@@ -14,8 +14,7 @@ import UserProfileImg from "../components/UserProfileImg";
 import { useNavigation } from "@react-navigation/core";
 import rootUrl from "../data/rootUrl";
 import { removeData } from "../components/HandleAsyncStorage";
-
-export default function MyPage() {
+export default function MyPage({ route }) {
   const [myList, setMyList] = useState([]);
   const [myInfo, setmyInfo] = useState({});
   const { setUser, accessToken } = useContext(AuthContext);
@@ -36,7 +35,9 @@ export default function MyPage() {
   };
 
   function loadMyList() {
-    fetch(`${rootUrl}/foreatown/gather-room/mylist`, requestOption)
+    fetch(
+      `${rootUrl}/foreatown/gather-room/mylist/${route.params?.state || 21}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setMyList(data);
@@ -45,10 +46,12 @@ export default function MyPage() {
   }
 
   function loadMyInfo() {
-    fetch(`${rootUrl}/users/myinfo`, requestOption)
+    fetch(`${rootUrl}/users/myinfo/${route.params?.state || 21}`)
       .then((res) => res.json())
       .then((data) => {
         setmyInfo(data);
+        console.log(data);
+        console.log("myinfo");
       })
       .catch((err) => console.log(err));
   }
@@ -127,6 +130,8 @@ export default function MyPage() {
                 onPress={() => {
                   removeData("accessToken");
                   removeData("refreshToken");
+                  removeData("user");
+                  removeData("userName");
                   setUser(null);
                   navigation.push("Main");
                 }}

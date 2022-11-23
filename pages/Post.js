@@ -92,6 +92,7 @@ export default function Post() {
       body: formData,
     };
 
+    console.log(formData);
     fetch(`${rootUrl}/foreatown/gather-room`, requestOption)
       .then((res) => {
         console.log(res.ok);
@@ -190,6 +191,7 @@ export default function Post() {
     return (
       <View style={styles.inputBox}>
         <Text style={styles.textBold}>Where</Text>
+
         <View style={styles.inputOnlineWrapper}>
           <TouchableOpacity
             style={
@@ -241,9 +243,7 @@ export default function Post() {
           }
           disabled={!inputOnline ? false : true}
           buttonTextAfterSelection={(selectedItem, index) => {
-            console.log(selectedItem);
             setInputWhere(selectedItem);
-            return selectedItem;
           }}
           buttonStyle={styles.dropdown1BtnStyle}
           buttonTextStyle={styles.dropdown1BtnTxtStyle}
@@ -342,8 +342,8 @@ export default function Post() {
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Post</Text>
-          {/* <Text>{user}</Text>
-          <Text>{accessToken}</Text> */}
+          <Text>{user}</Text>
+          <Text>{accessToken}</Text>
           <CategoryBar
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}

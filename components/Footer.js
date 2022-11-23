@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../App";
 
 function Footer() {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, accessToken } = useContext(AuthContext);
   // 나중에 createBottomTabNavigator로 구현해보기!
   const navigation = useNavigation();
 
