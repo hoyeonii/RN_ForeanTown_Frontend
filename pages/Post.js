@@ -21,26 +21,69 @@ import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import rootUrl from "../data/rootUrl";
 
-export default function Post() {
-  // const [showSelectBox, setShowSelectBox] = useState(false);
+//User can post here.
+//if route.params?.data exists, it updates, if not, it creates new post
+export default function Post({ route }) {
+  // const [savedData, setSavedData] = useState({});
   // const [selectedCountry, setSelectedCountry] = useState("국가를 선택해주세요");
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [inputTitle, setInputTitle] = useState("");
-  const [inputWhen, setInputWhen] = useState(new Date());
+  const [selectedCategory, setSelectedCategory] = useState(
+    nametoCategoryId(route.params?.data.gather_room_category.name) || null
+  );
+  const [inputTitle, setInputTitle] = useState(
+    route.params?.data.subject || ""
+  );
+  const [inputWhen, setInputWhen] = useState(
+    route.params?.data ? new Date(route.params?.data.date_time) : new Date()
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   showDatePicker;
-  const [inputOnline, setInputOnline] = useState(true);
-  const [inputWhere, setInputWhere] = useState(null);
-  const [inputWho, setInputWho] = useState(2);
-  const [inputDetail, setInputDetail] = useState("");
-  const [imageArr, setImageArr] = useState([]);
+  const [inputOnline, setInputOnline] = useState(
+    route.params?.data ? route.params?.data.is_online : true
+  );
+  const [inputWhere, setInputWhere] = useState(
+    route.params?.data.address || null
+  );
+  const [inputWho, setInputWho] = useState(route.params?.data.user_limit || 2);
+  const [inputDetail, setInputDetail] = useState(
+    route.params?.data.content || ""
+  );
+  const [imageArr, setImageArr] = useState(
+    route.params?.data.gather_room_images || []
+  );
+
+  // const [selectedCategory, setSelectedCategory] = useState(
+  //   nametoCategoryId(route?.params?.data?.gather_room_category?.name) || null
+  // );
+  // const [inputTitle, setInputTitle] = useState(
+  //   route?.params?.data?.subject || ""
+  // );
+  // const [inputWhen, setInputWhen] = useState(
+  //   new Date(route?.params?.data?.date_time) || new Date()
+  // );
+  // const [showDatePicker, setShowDatePicker] = useState(false);
+  // showDatePicker;
+  // const [inputOnline, setInputOnline] = useState(
+  //   route?.params?.data ? route?.params?.data?.is_online : true
+  // );
+  // const [inputWhere, setInputWhere] = useState(
+  //   route?.params?.data?.address || null
+  // );
+  // const [inputWho, setInputWho] = useState(route?.params.data?.user_limit || 2);
+  // const [inputDetail, setInputDetail] = useState(
+  //   route?.params?.data?.content || ""
+  // );
+  // const [imageArr, setImageArr] = useState(
+  //   route?.params?.data?.gather_room_images || []
+  // );
+
   // const [accessToken, setAccessToken] = useState([]);
   const navigate = useNavigation();
   const { setUser, accessToken, user } = useContext(AuthContext);
   const formData = new FormData();
 
+  console.log(route?.params?.data);
   // useEffect(() => {
-  //   checkAccessToken("accessToken");
+  //   setSavedData(route.params?.data);
   // }, []);
 
   const offlineLocation = [
@@ -60,7 +103,7 @@ export default function Post() {
     "Busan",
   ];
 
-  function handlePost() {
+  function appendDataToFormData() {
     formData.append("subject", inputTitle);
     formData.append("content", inputDetail);
     formData.append("address", inputWhere);
@@ -69,6 +112,10 @@ export default function Post() {
     formData.append("date_time", editDateForm(inputWhen) + " 17:00:00");
     formData.append("gather_room_category", categoryIdtoName(selectedCategory));
     appendImage(imageArr);
+  }
+
+  function handlePost() {
+    appendDataToFormData();
     // formData.append("subject", "제목테스트");
     // formData.append("content", "내용테스트");
     // formData.append("address", inputOnline ? null : inputWhere);
@@ -107,6 +154,33 @@ export default function Post() {
         console.log("에러");
         console.log(err);
       });
+  }
+
+  function handleUpdate() {
+    appendDataToFormData();
+
+    const requestOption = {
+      method: "PATCH",
+      headers: {
+        Authorization: "Bearer " + accessToken,
+      },
+      body: formData,
+    };
+
+    fetch(
+      `${rootUrl}/foreatown/gather-room/${route.params.data.id}`,
+      requestOption
+    )
+      .then((res) => {
+        if (res.ok) navigate.push("Main");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("업뎃완료");
+        console.log(data);
+      })
+
+      .catch((err) => console.error(err));
   }
 
   // input으로 파일 첨부시, 받아온 파일 array를 formData로 하나씩 넣어줌
@@ -156,6 +230,19 @@ export default function Post() {
     }
   }
 
+  function nametoCategoryId(name) {
+    switch (name) {
+      case "MeetUp":
+        return 1;
+      case "Dating":
+        return 2;
+      case "Language":
+        return 3;
+      default:
+        return 4;
+    }
+  }
+
   //Components
   function FieldWhen() {
     return (
@@ -190,7 +277,7 @@ export default function Post() {
   function FieldWhere() {
     return (
       <View style={styles.inputBox}>
-        <Text style={styles.textBold}>Where</Text>
+        <Text style={styles.textBold}>Where{inputWhere}</Text>
 
         <View style={styles.inputOnlineWrapper}>
           <TouchableOpacity
@@ -342,18 +429,19 @@ export default function Post() {
       <View style={styles.container}>
         <ScrollView>
           <Text style={styles.title}>Post</Text>
-          <Text>{user}</Text>
-          <Text>{accessToken}</Text>
+          {/* <Text>{user}</Text>
+          <Text>{accessToken}</Text> */}
           <CategoryBar
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
           />
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Title</Text>
+            <Text style={styles.textBold}>Title{inputTitle}</Text>
             <TextInput
               style={styles.textInput}
               maxLength={60}
-              value={inputTitle}
+              defaultValue={inputTitle}
+              // value={inputTitle}
               onChangeText={(e) => {
                 // e.preventDefault();
                 setInputTitle(e);
@@ -399,7 +487,7 @@ export default function Post() {
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
-              handlePost();
+              route.params.data ? handleUpdate() : handlePost();
             }}
           >
             <Text style={styles.postTxt}>Post</Text>

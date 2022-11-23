@@ -22,7 +22,7 @@ import Post from "./Post";
 import { useNavigation } from "@react-navigation/core";
 
 function Detail({ route }) {
-  const [data, setData] = useState("");
+  const [data, setData] = useState({});
   const [showImageUri, setShowImageUri] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const { user, setUser, accessToken, userId } = useContext(AuthContext);
@@ -191,23 +191,31 @@ function Detail({ route }) {
             </View>
           )}
 
-          <View style={styles.btnWrapper}>
-            <TouchableOpacity style={styles.joinBtn}>
-              <Text style={styles.joinBtnTxt}>Message</Text>
-            </TouchableOpacity>
-            {data?.creator?.id !== userId ? (
+          {data?.creator?.id !== userId ? (
+            <View style={styles.btnWrapper}>
+              <TouchableOpacity style={styles.joinBtn}>
+                <Text style={styles.joinBtnTxt}>Message</Text>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.joinBtn}>
                 <Text style={styles.joinBtnTxt}>Join</Text>
               </TouchableOpacity>
-            ) : (
+            </View>
+          ) : (
+            <View style={styles.btnWrapper}>
+              <TouchableOpacity
+                style={styles.joinBtn}
+                onPress={() => navigate.push("Post", { data: data })}
+              >
+                <Text style={styles.joinBtnTxt}>Edit</Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.joinBtn}
                 onPress={() => setOpenDeleteModal(true)}
               >
                 <Text style={styles.joinBtnTxt}>Delete</Text>
               </TouchableOpacity>
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </ScrollView>
       {showImageUri && (

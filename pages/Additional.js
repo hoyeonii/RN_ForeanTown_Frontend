@@ -21,18 +21,37 @@ import { AuthContext } from "../App";
 import SelectDropdown from "react-native-select-dropdown";
 import rootUrl from "../data/rootUrl";
 import { storeData } from "../components/HandleAsyncStorage";
+import * as ImagePicker from "expo-image-picker";
+import UserProfileImg from "../components/UserProfileImg";
 
-export default function Additional() {
+export default function Additional({ route }) {
   const navigate = useNavigation();
   const { setUser, accessToken } = useContext(AuthContext);
   // const [accessToken, setAccessToken] = useState([]);
+  console.log("------------------------유저데이터");
+  console.log(route.params?.userData);
 
   const [countryList, setCountryList] = useState([]);
-  const [inputNickNameValue, setInputNickNameValue] = useState("");
-  const [inputAgeValue, setInputAgeValue] = useState("");
-  const [inputIsMaleValue, setInputIsMaleValue] = useState(true);
-  const [inputLocationValue, setInputLocationValue] = useState("");
-  const [inputCountryValue, setInputCountryValue] = useState("");
+  const [inputNickNameValue, setInputNickNameValue] = useState(
+    route.params?.userData.nickname || ""
+  );
+  const [profileImg, setProfileImg] = useState("");
+  const [inputAgeValue, setInputAgeValue] = useState(
+    route.params?.userData.age || ""
+  );
+  const [inputIsMaleValue, setInputIsMaleValue] = useState(
+    route.params
+      ? route.params?.userData.gender === "male"
+        ? true
+        : false
+      : true
+  );
+  const [inputLocationValue, setInputLocationValue] = useState(
+    route.params?.userData.location || ""
+  );
+  const [inputCountryValue, setInputCountryValue] = useState(
+    route.params?.userData.country.name || ""
+  );
   const [ErrMessage, setErrMessage] = useState("");
 
   //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
@@ -53,14 +72,18 @@ export default function Additional() {
     "Busan",
   ];
 
-  (function loadCountryNameList() {
+  useEffect(() => {
+    loadCountryNameList();
+  }, []);
+
+  function loadCountryNameList() {
     fetch(`${rootUrl}/users/country/list?name=`)
       .then((res) => res.json())
       .then((data) => {
         setCountryList(data);
       })
       .catch((err) => console.log(err));
-  })();
+  }
 
   const handleAdditionalInfo = () => {
     const requestOptions = {
@@ -70,17 +93,17 @@ export default function Additional() {
         Authorization: "Bearer " + accessToken,
       },
       body: JSON.stringify({
-        nickname: "Ken",
-        age: 26,
-        is_male: true,
-        location: "서울",
+        nickname: inputNickNameValue,
+        age: inputAgeValue,
+        is_male: inputIsMaleValue,
+        location: inputLocationValue,
         country: {
-          name: "Italy",
+          name: inputCountryValue,
         },
       }),
     };
     console.log(requestOptions);
-    fetch(`${rootUrl}/users/additional-info`, requestOptions)
+    fetch(`${rootUrl}/users/myinfo`, requestOptions)
       .then((response) => {
         console.log(response.status);
         // response.status >= 400
@@ -91,12 +114,37 @@ export default function Additional() {
       })
       .then((res) => {
         console.log("로그인 결과");
-        console.log(res);
+        res.ERROR_MESSAGE
+          ? setErrMessage(res.ERROR_MESSAGE[0])
+          : navigate.push("MyPage");
+        // setErrMessage(res.ERROR_MESSAGE[0]);
       })
       .catch((err) => {
         console.log("에러: " + err);
       });
   };
+
+  function FieldAttachment() {
+    async function pickImage() {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.cancelled) {
+        setProfileImg(result.uri);
+      }
+    }
+
+    return (
+      <TouchableOpacity style={styles.profileImg} onPress={pickImage}>
+        <UserProfileImg img={profileImg} />
+        {profileImg && <Image source={{ uri: profileImg }} />}
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <ImageBackground
@@ -107,26 +155,30 @@ export default function Additional() {
       <View style={styles.container}>
         <View style={styles.innercontainer}>
           <Text style={styles.title}>Tell us more about you!</Text>
-          <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Nickname </Text>
-            <TextInput
-              style={styles.textInput}
-              value={inputNickNameValue}
-              maxLength={10}
-              onChangeText={(e) => {
-                setInputNickNameValue(e);
-              }}
-            />
+          <View style={styles.horizontal}>
+            <View>
+              <Text style={styles.textBold}>Nickname </Text>
+              <TextInput
+                style={styles.textInput}
+                value={inputNickNameValue}
+                maxLength={10}
+                onChangeText={(e) => {
+                  setInputNickNameValue(e);
+                }}
+              />
+            </View>
+            {/* <FieldAttachment style={styles.profileImg} /> */}
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Age</Text>
+            <Text style={styles.textBold}>Age{inputAgeValue}</Text>
             <TextInput
               style={styles.textInput}
-              value={inputAgeValue}
               keyboardType="numeric"
+              value={inputAgeValue}
               onChangeText={(e) => {
                 //입력값이 0으로 시작하지 않고, 두자리이며, 온점을 포함하지 않으면 적용
+                console.log(e);
                 if (e.indexOf(0) !== 0 && e.length < 3 && !e.includes("."))
                   setInputAgeValue(e);
               }}
@@ -180,11 +232,11 @@ export default function Additional() {
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Location</Text>
+            <Text style={styles.textBold}>Location{inputLocationValue}</Text>
             <SelectDropdown
               style={styles.dropDown}
               data={offlineLocation}
-              defaultButtonText={"Select Location"}
+              defaultButtonText={inputLocationValue || "Select Location"}
               buttonTextAfterSelection={(selectedItem, index) => {
                 setInputLocationValue(selectedItem);
                 return selectedItem;
@@ -198,11 +250,11 @@ export default function Additional() {
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Country</Text>
+            <Text style={styles.textBold}>Country{inputCountryValue}</Text>
             <SelectDropdown
               style={styles.dropDown}
               data={countryList.map((el) => el.name)}
-              defaultButtonText={"Select Location"}
+              defaultButtonText={inputCountryValue || "Select Location"}
               buttonTextAfterSelection={(selectedItem, index) => {
                 setInputCountryValue(selectedItem);
                 return selectedItem;
@@ -274,11 +326,26 @@ const styles = StyleSheet.create({
     padding: 10,
     color: "white",
   },
+
   image: {
     flex: 1,
     justifyContent: "center",
   },
+  nicknameInputBox: {},
   inputBox: { marginTop: 20 },
+  horizontal: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  profileImg: {
+    // alignItems: "center",
+    marginTop: 20,
+    marginRight: 10,
+    // padding: 10,
+    // borderRadius: 10,
+    width: 70,
+    height: 70,
+  },
   textBold: {
     fontWeight: "bold",
     paddingBottom: 5,
@@ -291,6 +358,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     backgroundColor: "white",
+    minWidth: "50%",
   },
   warningText: { paddingLeft: 10, color: "white" },
   postBtn: {

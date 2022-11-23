@@ -13,10 +13,10 @@ import rootUrl from "../data/rootUrl";
 import { storeData } from "../components/HandleAsyncStorage";
 
 export default function SignUp() {
-  const navigation = useNavigation();
+  const navigate = useNavigation();
   const { setUser, setAccessToken } = useContext(AuthContext);
   const [inputNameValue, setInputNameValue] = useState("");
-  const [input_email_value, set_input_email_value] = useState("");
+  const [inputEmailValue, setInputEmailValue] = useState("");
   const [inputPasswordvalue, setInputPasswordvalue] = useState("");
   const [inputPassword2Value, setInputPassword2Value] = useState("");
   const [emailErrMessage, setEmailErrMessage] = useState("");
@@ -31,7 +31,7 @@ export default function SignUp() {
       body: JSON.stringify({
         name: inputNameValue,
         email: inputEmailValue,
-        password1: inputPasswordValue,
+        password1: inputPasswordvalue,
         password2: inputPassword2Value,
       }),
     };
@@ -69,7 +69,7 @@ export default function SignUp() {
     const regex =
       /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
 
-    set_input_email_value(spaceRemoved);
+    setInputEmailValue(spaceRemoved);
     if (regex.test(spaceRemoved)) {
       setEmailErrMessage("");
     } else {
@@ -90,7 +90,7 @@ export default function SignUp() {
             <Text style={styles.textBold}>Name</Text>
             <TextInput
               style={styles.textInput}
-              value={input_name_value}
+              value={inputNameValue}
               onChangeText={(e) => {
                 setInputNameValue(e);
               }}
@@ -101,7 +101,7 @@ export default function SignUp() {
             <TextInput
               style={styles.textInput}
               keyboardType="email-address"
-              value={input_email_value}
+              value={inputEmailValue}
               onChangeText={(e) => {
                 handleEmailChange(e);
               }}
@@ -114,10 +114,10 @@ export default function SignUp() {
             <Text style={styles.textBold}>비밀번호</Text>
             <TextInput
               style={styles.textInput}
-              value={input_password_value}
+              value={inputPasswordvalue}
               secureTextEntry={true} //비밀번호 ** 처리
               onChangeText={(e) => {
-                setInputPasswordValue(e);
+                setInputPasswordvalue(e);
               }}
             />
           </View>
@@ -125,16 +125,15 @@ export default function SignUp() {
             <Text style={styles.textBold}>비밀번호 확인</Text>
             <TextInput
               style={styles.textInput}
-              value={input_password2_value}
+              value={inputPassword2Value}
               secureTextEntry={true}
               onChangeText={(e) => {
                 setInputPassword2Value(e);
-                console.log(input_password_value.length);
               }}
             />
             <Text style={styles.warningText}>
-              {input_password_value.length > 0
-                ? input_password_value === input_password2_value
+              {inputPasswordvalue.length > 0
+                ? inputPasswordvalue === inputPassword2Value
                   ? ""
                   : "비밀번호 불일치"
                 : ""}
@@ -144,11 +143,11 @@ export default function SignUp() {
           <TouchableOpacity
             style={styles.postBtn}
             disabled={
-              input_name_value &&
-              input_email_value &&
+              inputNameValue &&
+              inputEmailValue &&
               !emailErrMessage &&
-              input_password_value &&
-              input_password_value === input_password2_value
+              inputPasswordvalue &&
+              inputPasswordvalue === inputPassword2Value
                 ? false
                 : true
             }
@@ -157,6 +156,13 @@ export default function SignUp() {
             }}
           >
             <Text style={styles.postTxt}>Sign Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigate.push("Additional");
+            }}
+          >
+            <Text style={styles.postTxt}>skwnddp wldnjAdditional</Text>
           </TouchableOpacity>
         </View>
       </View>

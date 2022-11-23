@@ -26,13 +26,13 @@ export default function MyPage({ route }) {
     loadMyInfo();
   }, []);
 
-  const requestOption = {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + accessToken,
-    },
-  };
+  // const requestOption = {
+  //   method: "GET",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: "Bearer " + accessToken,
+  //   },
+  // };
 
   function loadMyList() {
     fetch(
@@ -75,7 +75,11 @@ export default function MyPage({ route }) {
             <TouchableOpacity onPress={() => navigation.push("Chat")}>
               <Text style={styles.messageBtn}>Message</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.push("Additional")}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.push("Additional", { userData: myInfo })
+              }
+            >
               <Text style={styles.messageBtn}>Edit</Text>
             </TouchableOpacity>
           </View>
