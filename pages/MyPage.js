@@ -17,7 +17,8 @@ import { removeData } from "../components/HandleAsyncStorage";
 export default function MyPage({ route }) {
   const [myList, setMyList] = useState([]);
   const [myInfo, setmyInfo] = useState({});
-  const { setUser, accessToken } = useContext(AuthContext);
+  const { userId, setUser, setAccessToken, setUserId } =
+    useContext(AuthContext);
   const [showRoomof, setShowRoomOf] = useState("Created");
   const navigation = useNavigation();
 
@@ -36,7 +37,7 @@ export default function MyPage({ route }) {
 
   function loadMyList() {
     fetch(
-      `${rootUrl}/foreatown/gather-room/mylist/${route.params?.state || 21}`
+      `${rootUrl}/foreatown/gather-room/mylist/${route.params?.state || userId}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -46,12 +47,10 @@ export default function MyPage({ route }) {
   }
 
   function loadMyInfo() {
-    fetch(`${rootUrl}/users/myinfo/${route.params?.state || 21}`)
+    fetch(`${rootUrl}/users/myinfo/${route.params?.state || userId}`)
       .then((res) => res.json())
       .then((data) => {
         setmyInfo(data);
-        console.log(data);
-        console.log("myinfo");
       })
       .catch((err) => console.log(err));
   }
@@ -72,16 +71,19 @@ export default function MyPage({ route }) {
               {myInfo?.age} {myInfo?.is_male ? "♂" : "♀"} |{" "}
               {myInfo?.country?.name} | {myInfo?.location}
             </Text>
-            <TouchableOpacity onPress={() => navigation.push("Chat")}>
-              <Text style={styles.messageBtn}>Message</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.push("Additional", { userData: myInfo })
-              }
-            >
-              <Text style={styles.messageBtn}>Edit</Text>
-            </TouchableOpacity>
+            {myInfo.id !== userId ? (
+              <TouchableOpacity onPress={() => navigation.push("Chat")}>
+                <Text style={styles.messageBtn}>Message</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.push("Additional", { userData: myInfo })
+                }
+              >
+                <Text style={styles.messageBtn}>Edit</Text>
+              </TouchableOpacity>
+            )}
           </View>
           <View style={styles.userPic}>
             <UserProfileImg img={myInfo?.profile_img_url} />
@@ -136,7 +138,10 @@ export default function MyPage({ route }) {
                   removeData("refreshToken");
                   removeData("user");
                   removeData("userName");
+                  removeData("userName");
                   setUser(null);
+                  setAccessToken(null);
+                  setUserId(null);
                   navigation.push("Main");
                 }}
               />

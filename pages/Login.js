@@ -20,7 +20,7 @@ import { storeData } from "../components/HandleAsyncStorage";
 
 export default function Login() {
   const navigate = useNavigation();
-  const { setUser, setAccessToken } = useContext(AuthContext);
+  const { setUser, setAccessToken, setUserId } = useContext(AuthContext);
   const [input_email_value, setInputEmailValue] = useState("");
   const [input_password_value, setInputPasswordValue] = useState("");
   const [emailErrMessage, setEmailErrMessage] = useState("");
@@ -53,6 +53,7 @@ export default function Login() {
         storeData("user", data.name);
         setUser(data.name);
         setAccessToken(data.access_token);
+        setUserId(data.id);
 
         navigate.push("Main");
       })
