@@ -1,7 +1,9 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 
-export default function ShowImage({ showImageUri, setShowImageUri }) {
+export default function ShowImage({ showImageUri, setShowImageUri, imageArr }) {
+  console.log("imageArr");
+  console.log(imageArr);
   return (
     <View style={styles.container}>
       <Image
@@ -19,6 +21,13 @@ export default function ShowImage({ showImageUri, setShowImageUri }) {
       >
         <Text>X</Text>
       </TouchableOpacity>
+      <View style={styles.thumbnailWrapper}>
+        {imageArr?.map((el, i) => (
+          <TouchableOpacity key={i} onPress={() => setShowImageUri(el.img_url)}>
+            <Image style={styles.thumbnail} source={{ uri: el.img_url }} />
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 }
@@ -48,4 +57,6 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "white",
   },
+  thumbnailWrapper: { flexDirection: "row", alignSelf: "center" },
+  thumbnail: { width: 100, height: 100, margin: 2 },
 });

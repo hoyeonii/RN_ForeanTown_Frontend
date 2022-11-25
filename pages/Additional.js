@@ -28,8 +28,6 @@ export default function Additional({ route }) {
   const navigate = useNavigation();
   const { setUser, accessToken } = useContext(AuthContext);
   // const [accessToken, setAccessToken] = useState([]);
-  console.log("------------------------유저데이터");
-  console.log(route.params?.userData);
 
   const [countryList, setCountryList] = useState([]);
   const [inputNickNameValue, setInputNickNameValue] = useState(
@@ -50,7 +48,7 @@ export default function Additional({ route }) {
     route.params?.userData.location || ""
   );
   const [inputCountryValue, setInputCountryValue] = useState(
-    route.params?.userData.country.name || ""
+    route?.params?.userData?.country?.name || ""
   );
   const [ErrMessage, setErrMessage] = useState("");
 
@@ -112,12 +110,13 @@ export default function Additional({ route }) {
 
         return response.json();
       })
-      .then((res) => {
+      .then((data) => {
         console.log("로그인 결과");
-        res.ERROR_MESSAGE
-          ? setErrMessage(res.ERROR_MESSAGE[0])
+        console.log(data);
+
+        data.ERROR_MESSAGE
+          ? setErrMessage(data.ERROR_MESSAGE[0])
           : navigate.push("MyPage");
-        // setErrMessage(res.ERROR_MESSAGE[0]);
       })
       .catch((err) => {
         console.log("에러: " + err);

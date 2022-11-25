@@ -1,10 +1,17 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import defaultUserProfilePic from "../assets/defaultUserProfilePic.jpg";
+import { useNavigation } from "@react-navigation/core";
 
-const UserProfileImg = ({ img }) => {
+const UserProfileImg = ({ img, id }) => {
+  const navigate = useNavigation();
   return (
-    <View style={styles.imgWrapper}>
+    <TouchableOpacity
+      style={styles.imgWrapper}
+      onPress={() => {
+        if (id) navigate.push("MyPage", { state: id });
+      }}
+    >
       <Image
         style={styles.profilePic}
         source={img ? { uri: img } : defaultUserProfilePic}
@@ -15,7 +22,7 @@ const UserProfileImg = ({ img }) => {
           uri: "https://images.fineartamerica.com/images-medium-large-5/american-flag--square-wingsdomain-art-and-photography.jpg",
         }}
       />
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -13,9 +13,10 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../App";
+import AppText from "./AppText";
 
 function Footer() {
-  const { user, setUser, accessToken } = useContext(AuthContext);
+  const { user, userId, setUser, accessToken } = useContext(AuthContext);
   // 나중에 createBottomTabNavigator로 구현해보기!
   const navigation = useNavigation();
 
@@ -54,21 +55,32 @@ function Footer() {
         onPress={() => navigation.navigate(navTo)}
       >
         <Icon name={icon} size={30} color="gray" />
-        <Text style={styles.pageText}>{name}</Text>
+        <AppText style={styles.pageText}>{name}</AppText>
       </TouchableOpacity>
     );
   }
+  
   return (
     <View style={styles.container}>
       <NavTab navTo="Post" icon="plus" name="Post" />
       <NavTab navTo="Main" icon="home" name="Main" />
-      <NavTab
-        navTo={user ? "MyPage" : "Login"}
+      {/* <NavTab
+        navTo={user ? ("MyPage", { state: userId }) : "Login"}
         icon="user"
         // name={user ? "user" : "nonpe"}
         name={user ? user : "로그인"}
-      />
-
+      /> */}
+      <TouchableOpacity
+        style={styles.page}
+        onPress={() => {
+          user
+            ? navigation.navigate("MyPage", { state: userId })
+            : navigation.navigate("Login");
+        }}
+      >
+        <Icon name={"user"} size={30} color="gray" />
+        <Text style={styles.pageText}>{user ? user + userId : "로그인"}</Text>
+      </TouchableOpacity>
       <Button
         title="read"
         onPress={() => {

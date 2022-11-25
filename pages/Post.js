@@ -112,25 +112,19 @@ export default function Post({ route }) {
     formData.append("date_time", editDateForm(inputWhen) + " 17:00:00");
     formData.append("gather_room_category", categoryIdtoName(selectedCategory));
     appendImage(imageArr);
+
+    //     }
+    //   }
   }
 
   function handlePost() {
+    console.log("handlePost");
     appendDataToFormData();
-    // formData.append("subject", "제목테스트");
-    // formData.append("content", "내용테스트");
-    // formData.append("address", inputOnline ? null : inputWhere);
-    // formData.append("is_online", true);
-    // formData.append("user_limit", 5);
-    // formData.append("date_time", editDateForm(inputWhen) + " 17:00:00");
-    // //  "2021-06-25 17:00:00");
-    // formData.append("gather_room_category", "Language");
-
-    // console.log("토큰여기" + accessToken);
-    // console.log(formData);
 
     const requestOption = {
       method: "POST",
       headers: {
+        "Content-Type": "multipart/form-data",
         Accept: "*/*",
         "Accept-Encoding": "gzip,deflate,br",
         Connection: "keep-alive",
@@ -139,15 +133,14 @@ export default function Post({ route }) {
       body: formData,
     };
 
-    console.log(formData);
     fetch(`${rootUrl}/foreatown/gather-room`, requestOption)
       .then((res) => {
-        console.log(res.ok);
         if (res.ok) navigate.push("Main");
         return res.json();
       })
       .then((data) => {
         console.log(data);
+        console.log("새로운 포스팅 왈료ㅛㅛㅛㅛㅛㅛㅛ");
         // navigate.push(`Main`)
       })
       .catch((err) => {
@@ -157,11 +150,16 @@ export default function Post({ route }) {
   }
 
   function handleUpdate() {
+    console.log("handle UPDATAEEE");
     appendDataToFormData();
 
     const requestOption = {
       method: "PATCH",
       headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "*/*",
+        "Accept-Encoding": "gzip,deflate,br",
+        Connection: "keep-alive",
         Authorization: "Bearer " + accessToken,
       },
       body: formData,
@@ -172,11 +170,14 @@ export default function Post({ route }) {
       requestOption
     )
       .then((res) => {
+        console.log("웨 않돼");
+        console.log(res.ok);
+        console.log(res.status);
         if (res.ok) navigate.push("Main");
-        return res.json();
+        return res;
       })
       .then((data) => {
-        console.log("업뎃완료");
+        console.log("기존 포스트 업뎃완료ㅛㅛㅛㅛㅛㅛㅛㅛㅛ");
         console.log(data);
       })
 
@@ -187,7 +188,16 @@ export default function Post({ route }) {
   function appendImage(imageArr) {
     if (imageArr) {
       for (let i = 0; i < imageArr.length; i++) {
-        formData.append("gather_room_images", imageArr[i]);
+        const filename = imageArr[i].split("/").pop();
+        const match = /\.(\w+)$/.exec(filename ?? "");
+        const type = match ? `image/${match[1]}` : `image`;
+
+        //사진 넘겨줄때 uri랑 name, type까지 다 보내줘야함!!!
+        formData.append("gather_room_images", {
+          uri: imageArr[i],
+          name: filename,
+          type,
+        });
       }
     }
   }
@@ -487,9 +497,15 @@ export default function Post({ route }) {
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
-              route.params.data ? handleUpdate() : handlePost();
+              route.params?.data.id ? handleUpdate() : handlePost();
             }}
           >
+            <Button
+              title="t사진"
+              onPress={() => {
+                console.log(imageArr);
+              }}
+            />
             <Text style={styles.postTxt}>Post</Text>
           </TouchableOpacity>
         </ScrollView>

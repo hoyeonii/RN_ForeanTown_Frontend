@@ -10,6 +10,7 @@ import {
   BackHandler,
   ScrollView,
   Modal,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -25,30 +26,43 @@ function Detail({ route }) {
   const [data, setData] = useState({});
   const [showImageUri, setShowImageUri] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [joined, setJoined] = useState(0);
   const { user, setUser, accessToken, userId } = useContext(AuthContext);
   const navigate = useNavigation();
 
-  const images = [
-    "https://media.istockphoto.com/id/1328831714/photo/portrait-of-a-smiling-young-african-woman.jpg?b=1&s=170667a&w=0&k=20&c=SYNQ3l6j6KKUyGMc71nMfjzscuVL7_HEXRIN9BOE0fw=",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwyJXiHvSHXuLVSOLV7CYiHk0gUpsLlJZk1RjorToy&s",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWvmrSyp3mF0eawiyNdElnwi84y_whv6OqRGM7r84&s",
-    "https://i.ytimg.com/vi/2uAIlbs8WeE/hqdefault.jpg?sqp=-oaymwEiCKgBEF5IWvKriqkDFQgBFQAAAAAYASUAAMhCPQCAokN4AQ==&rs=AOn4CLDawsCv56e-dfPM9aVoK_okr5abgQ",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCN2zeOBbTbAyG4PVTaVsNi4dbfGW0WZP5t9yMONNQrjL8XvJe2nuqdQiAe0mAB9Dh-tw&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1jPV9rMr4gKjhBYId6LwFrBQWyqMhMNJoB0m_7Y28qOlpokEd8wjxFuyWtFIS9dSWj58&usqp=CAU",
-  ];
+  useEffect(() => {
+    loadData();
 
-  const loadData = () =>
+    checkIfJoined();
+  }, []);
+
+  function loadData() {
     fetch(`${rootUrl}/foreatown/gather-room/${route.params.id}`)
       .then((res) => res.json())
       .then((data) => {
         setData(data);
+        console.log("detailData");
         console.log(data);
       })
       .catch((err) => console.log(err));
+  }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  function checkIfJoined() {
+    const requestOption = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+
+    fetch(`${rootUrl}/foreatown/gather-room/reservation/list`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        setJoined(data.find((el) => el.gather_room.id === route.params.id)?.id);
+      })
+      .catch((err) => console.log(err));
+  }
 
   const handleLinking = useCallback(async (url) => {
     console.log("rhrkhk");
@@ -118,16 +132,53 @@ function Detail({ route }) {
     );
   }
 
+  function handleJoin() {
+    const requestOption = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+      body: JSON.stringify({ gather_room_id: data.id }),
+    };
+
+    fetch(`${rootUrl}/foreatown/gather-room/reservation`, requestOption)
+      .then((res) => {
+        console.log(res.status);
+        if (res.status < 400) Alert.alert("Joined");
+      })
+      .catch((err) => console.log(err));
+  }
+  function handleUnjoin() {
+    const requestOption = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + accessToken,
+      },
+    };
+
+    fetch(
+      `${rootUrl}/foreatown/gather-room/reservation/${joined}`,
+      requestOption
+    )
+      .then((res) => {
+        console.log(res.status);
+        console.log(route.params.id);
+        if (res.status < 400) Alert.alert("Unjoined");
+        return res.json();
+      })
+      .then((data) => console.log(data))
+      .catch((err) => console.log(err));
+  }
+
   return (
     <View style={styles.container}>
-      {showImageUri && (
-        <ShowImage
-          showImageUri={showImageUri}
-          setShowImageUri={setShowImageUri}
-        />
-      )}
       {data.gather_room_category && (
-        <Text style={styles.title}>{data.gather_room_category.name}</Text>
+        <Text style={styles.title}>
+          {data.gather_room_category.name}
+          {joined}
+        </Text>
       )}
 
       <ScrollView>
@@ -147,22 +198,24 @@ function Detail({ route }) {
 
         <View style={[styles.section, styles.content]}>
           <Text style={styles.text}>{data.content}</Text>
-          {data.gather_room_images?.length > 0 &&
-            data.gather_room_images?.map((el, i) => (
-              <TouchableOpacity
-                key={i}
-                onPress={() => {
-                  setShowImageUri(el.img_url);
-                }}
-              >
-                <Image
-                  style={styles.attachment}
-                  source={{
-                    uri: el.img_url,
+          <View style={styles.attachmentWrapper}>
+            {data.gather_room_images?.length > 0 &&
+              data.gather_room_images?.map((el, i) => (
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => {
+                    setShowImageUri(el.img_url);
                   }}
-                />
-              </TouchableOpacity>
-            ))}
+                >
+                  <Image
+                    style={styles.attachment}
+                    source={{
+                      uri: el.img_url,
+                    }}
+                  />
+                </TouchableOpacity>
+              ))}
+          </View>
         </View>
         <View style={styles.section}>
           <Text style={styles.fontM}>Host{showImageUri}</Text>
@@ -171,7 +224,12 @@ function Detail({ route }) {
             onPress={() => navigate.push("MyPage", { state: data.creator.id })}
           >
             <View style={styles.userPic}>
-              <UserProfileImg img={data.creator?.profile_img_url} />
+              <UserProfileImg
+                img={
+                  data.creator?.profile_img_url && data.creator?.profile_img_url
+                }
+                id={data.creator?.id}
+              />
             </View>
 
             <Text style={styles.hostNameText}>{data.creator?.name}</Text>
@@ -185,7 +243,7 @@ function Detail({ route }) {
             <View style={styles.whosComingWrapper}>
               {data.participants?.map((el, i) => (
                 <View style={styles.userPic} key={i}>
-                  <UserProfileImg img={el} />
+                  <UserProfileImg img={el.profile_img_url} id={el.id} />
                 </View>
               ))}
             </View>
@@ -196,8 +254,15 @@ function Detail({ route }) {
               <TouchableOpacity style={styles.joinBtn}>
                 <Text style={styles.joinBtnTxt}>Message</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.joinBtn}>
-                <Text style={styles.joinBtnTxt}>Join</Text>
+              <TouchableOpacity
+                style={styles.joinBtn}
+                onPress={() => {
+                  joined ? handleUnjoin() : handleJoin();
+                }}
+              >
+                <Text style={styles.joinBtnTxt}>
+                  {joined ? "Unjoin" : "Join"}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -222,6 +287,7 @@ function Detail({ route }) {
         <ShowImage
           showImageUri={showImageUri}
           setShowImageUri={setShowImageUri}
+          imageArr={data.gather_room_images}
         />
       )}
       {openDeleteModal && <DeleteModal />}
@@ -270,7 +336,8 @@ const styles = StyleSheet.create({
 
     borderColor: "lightgray",
   },
-  attachment: { marginTop: 10, width: 150, height: 150 },
+  attachmentWrapper: { flexDirection: "row" },
+  attachment: { margin: 2, width: 100, height: 100 },
 
   fontL: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
   fontM: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },

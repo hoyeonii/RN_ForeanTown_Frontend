@@ -14,7 +14,7 @@ import { storeData } from "../components/HandleAsyncStorage";
 
 export default function SignUp() {
   const navigate = useNavigation();
-  const { setUser, setAccessToken } = useContext(AuthContext);
+  const { setUser, setUserId, setAccessToken } = useContext(AuthContext);
   const [inputNameValue, setInputNameValue] = useState("");
   const [inputEmailValue, setInputEmailValue] = useState("");
   const [inputPasswordvalue, setInputPasswordvalue] = useState("");
@@ -43,21 +43,27 @@ export default function SignUp() {
         // console.log("statusText" + response.statusText);
         // console.log("message" + response.message);
 
-        if (response.ok) navigation.push("Additional");
+        if (response.ok) navigate.push("Additional");
 
         return response.json();
       })
       .then((res) => {
         console.log("회원가입 결과");
         console.log(res);
+        console.log(res.status);
         if (res.access_token) {
           storeData("accessToken", res.access_token);
           storeData("refreshToken", res.refresh_token);
           setUser(res.name);
+          setUserId(res.id);
           setAccessToken(res.access_token);
         }
-        if (res.password1) setSignupErrMessage(res.password1[0]);
-        if (res.email) setSignupErrMessage(res.email[0]);
+        if (res.ERROR_MESSAGE[0]?.password1)
+          setSignupErrMessage(res.ERROR_MESSAGE[0].password1[0]);
+        if (res.ERROR_MESSAGE[0]?.email) {
+          console.log("이메일에 에러");
+          setSignupErrMessage(res.ERROR_MESSAGE[0].email[0]);
+        }
       })
       .catch((err) => {
         console.log("에러: " + err);

@@ -14,34 +14,48 @@ import UserProfileImg from "../components/UserProfileImg";
 import { useNavigation } from "@react-navigation/core";
 import rootUrl from "../data/rootUrl";
 import { removeData } from "../components/HandleAsyncStorage";
+
 export default function MyPage({ route }) {
-  const [myList, setMyList] = useState([]);
+  myCreatedList;
+  const [myCreatedList, setMyCreatedList] = useState([]);
+  const [myJoinedList, setMyJoinedList] = useState([]);
   const [myInfo, setmyInfo] = useState({});
-  const { userId, setUser, setAccessToken, setUserId } =
+  const { userId, user, setUser, accessToken, setAccessToken, setUserId } =
     useContext(AuthContext);
   const [showRoomof, setShowRoomOf] = useState("Created");
   const navigation = useNavigation();
 
   useEffect(() => {
-    loadMyList();
+    loadMyCreatedList();
+    loadMyJoinedList();
     loadMyInfo();
   }, []);
 
-  // const requestOption = {
-  //   method: "GET",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: "Bearer " + accessToken,
-  //   },
-  // };
+  const requestOption = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + accessToken,
+    },
+  };
 
-  function loadMyList() {
-    fetch(
-      `${rootUrl}/foreatown/gather-room/mylist/${route.params?.state || userId}`
-    )
+  function loadMyCreatedList() {
+    fetch(`${rootUrl}/foreatown/gather-room/mylist/${route.params?.state}`)
       .then((res) => res.json())
       .then((data) => {
-        setMyList(data);
+        setMyCreatedList(data);
+        console.log("created");
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+  }
+  function loadMyJoinedList() {
+    fetch(`${rootUrl}/foreatown/gather-room/reservation/list`, requestOption)
+      .then((res) => res.json())
+      .then((data) => {
+        setMyJoinedList(data);
+        console.log("LoadMyjoinedList");
+        console.log(data);
       })
       .catch((err) => console.log(err));
   }
@@ -55,6 +69,18 @@ export default function MyPage({ route }) {
       .catch((err) => console.log(err));
   }
 
+  function handleSignOut() {
+    removeData("accessToken");
+    removeData("refreshToken");
+    removeData("user");
+    removeData("userName");
+    removeData("userName");
+    setUser(null);
+    setAccessToken(null);
+    setUserId(null);
+    navigation.push("Main");
+  }
+
   return (
     <ImageBackground
       source={require("../assets/bg3.jpg")}
@@ -62,7 +88,10 @@ export default function MyPage({ route }) {
       style={styles.image}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>My Town</Text>
+        <Text style={styles.title}>
+          My Town{user}
+          {userId}
+        </Text>
         <View style={styles.profile}>
           <View>
             <Text style={styles.userName}>{myInfo?.nickname}</Text>
@@ -126,23 +155,17 @@ export default function MyPage({ route }) {
           {/* {방 맵핑해서 보여주기} */}
           <View style={styles.rooms}>
             <ScrollView style={styles.roomsScroll}>
-              {myList
-                // .filter((el) => el.creator_id === 1)
-                .map((el, i) => (
-                  <Card item={el} key={i} />
+              {showRoomof === "Created" &&
+                myCreatedList.map((el, i) => <Card item={el} key={i} />)}
+              {showRoomof === "Joined" &&
+                myJoinedList.length > 0 &&
+                myJoinedList.map((el, i) => (
+                  <Card item={el.gather_room} key={i} />
                 ))}
               <Button
                 title="Log Out"
                 onPress={() => {
-                  removeData("accessToken");
-                  removeData("refreshToken");
-                  removeData("user");
-                  removeData("userName");
-                  removeData("userName");
-                  setUser(null);
-                  setAccessToken(null);
-                  setUserId(null);
-                  navigation.push("Main");
+                  handleSignOut();
                 }}
               />
             </ScrollView>

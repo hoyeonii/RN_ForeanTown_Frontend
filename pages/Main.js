@@ -30,6 +30,8 @@ export default function App() {
       .then((res) => res.json())
       .then((data) => {
         setRoomsArr(data);
+        // console.log("방별");
+        // console.log(data);
       });
 
   useEffect(() => {

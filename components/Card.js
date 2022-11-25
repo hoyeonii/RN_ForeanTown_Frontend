@@ -22,7 +22,7 @@ function Card({ item }) {
       style={styles.item}
       onPress={() => navigation.push("Detail", { id: item.id })}
     >
-      <Text style={styles.heartIcon}>❤</Text>
+      <Text style={styles.heartIcon}>❤{item.id}</Text>
       <View style={styles.detail}>
         <Text style={styles.category}>
           {getCategorybyID(item.gather_room_category)}
@@ -43,7 +43,9 @@ function Card({ item }) {
           </Text>
         </View>
         <View style={styles.detailUnder}>
-          <Text>👥 {item.user_limit}</Text>
+          <Text>
+            👥 {item.participants_count}/{item.user_limit}
+          </Text>
           <Text>👤 {item.creator_id}</Text>
         </View>
       </View>
