@@ -22,69 +22,36 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import rootUrl from "../data/rootUrl";
 
 //User can post here.
-//if route.params?.data exists, it updates, if not, it creates new post
-export default function Post({ route }) {
+//if prevData exists, it updates, if not, it creates new post
+export default function Post({
+  route: {
+    params: { data: prevData },
+  },
+}) {
   // const [savedData, setSavedData] = useState({});
   // const [selectedCountry, setSelectedCountry] = useState("국가를 선택해주세요");
   const [selectedCategory, setSelectedCategory] = useState(
-    nametoCategoryId(route.params?.data.gather_room_category.name) || null
+    nametoCategoryId(prevData.gather_room_category.name) || null
   );
-  const [inputTitle, setInputTitle] = useState(
-    route.params?.data.subject || ""
-  );
+  const [inputTitle, setInputTitle] = useState(prevData.subject || "");
   const [inputWhen, setInputWhen] = useState(
-    route.params?.data ? new Date(route.params?.data.date_time) : new Date()
+    prevData ? new Date(prevData.date_time) : new Date()
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
   showDatePicker;
   const [inputOnline, setInputOnline] = useState(
-    route.params?.data ? route.params?.data.is_online : true
+    prevData ? prevData.is_online : true
   );
-  const [inputWhere, setInputWhere] = useState(
-    route.params?.data.address || null
-  );
-  const [inputWho, setInputWho] = useState(route.params?.data.user_limit || 2);
-  const [inputDetail, setInputDetail] = useState(
-    route.params?.data.content || ""
-  );
+  const [inputWhere, setInputWhere] = useState(prevData.address || null);
+  const [inputWho, setInputWho] = useState(prevData.user_limit || 2);
+  const [inputDetail, setInputDetail] = useState(prevData.content || "");
   const [imageArr, setImageArr] = useState(
-    route.params?.data.gather_room_images || []
+    prevData.gather_room_images.map((el) => el.img_url) || []
   );
 
-  // const [selectedCategory, setSelectedCategory] = useState(
-  //   nametoCategoryId(route?.params?.data?.gather_room_category?.name) || null
-  // );
-  // const [inputTitle, setInputTitle] = useState(
-  //   route?.params?.data?.subject || ""
-  // );
-  // const [inputWhen, setInputWhen] = useState(
-  //   new Date(route?.params?.data?.date_time) || new Date()
-  // );
-  // const [showDatePicker, setShowDatePicker] = useState(false);
-  // showDatePicker;
-  // const [inputOnline, setInputOnline] = useState(
-  //   route?.params?.data ? route?.params?.data?.is_online : true
-  // );
-  // const [inputWhere, setInputWhere] = useState(
-  //   route?.params?.data?.address || null
-  // );
-  // const [inputWho, setInputWho] = useState(route?.params.data?.user_limit || 2);
-  // const [inputDetail, setInputDetail] = useState(
-  //   route?.params?.data?.content || ""
-  // );
-  // const [imageArr, setImageArr] = useState(
-  //   route?.params?.data?.gather_room_images || []
-  // );
-
-  // const [accessToken, setAccessToken] = useState([]);
   const navigate = useNavigation();
   const { setUser, accessToken, user } = useContext(AuthContext);
   const formData = new FormData();
-
-  console.log(route?.params?.data);
-  // useEffect(() => {
-  //   setSavedData(route.params?.data);
-  // }, []);
 
   const offlineLocation = [
     "HongDae",
@@ -165,10 +132,7 @@ export default function Post({ route }) {
       body: formData,
     };
 
-    fetch(
-      `${rootUrl}/foreatown/gather-room/${route.params.data.id}`,
-      requestOption
-    )
+    fetch(`${rootUrl}/foreatown/gather-room/${data.id}`, requestOption)
       .then((res) => {
         console.log("웨 않돼");
         console.log(res.ok);
@@ -185,19 +149,30 @@ export default function Post({ route }) {
   }
 
   // input으로 파일 첨부시, 받아온 파일 array를 formData로 하나씩 넣어줌
+  //사진 넘겨줄때 uri랑 name, type까지 다 보내줘야함!!!
   function appendImage(imageArr) {
     if (imageArr) {
       for (let i = 0; i < imageArr.length; i++) {
         const filename = imageArr[i].split("/").pop();
-        const match = /\.(\w+)$/.exec(filename ?? "");
-        const type = match ? `image/${match[1]}` : `image`;
 
-        //사진 넘겨줄때 uri랑 name, type까지 다 보내줘야함!!!
-        formData.append("gather_room_images", {
-          uri: imageArr[i],
-          name: filename,
-          type,
-        });
+        if (imageArr[i].split("://")[0] === "https") {
+          //Picture already posted
+          formData.append("gather_room_images", {
+            uri: imageArr[i],
+            name: filename,
+            type: "multipart/form-data",
+          });
+        } else {
+          //Picture newly posted
+          const match = /\.(\w+)$/.exec(filename ?? "");
+          const type = match ? `image/${match[1]}` : `image`;
+
+          formData.append("gather_room_images", {
+            uri: imageArr[i],
+            name: filename,
+            type,
+          });
+        }
       }
     }
   }
@@ -253,6 +228,17 @@ export default function Post({ route }) {
     }
   }
 
+  function resetInput() {
+    setInputTitle("");
+    setIinputDetail("");
+    setIinputWhere(null);
+    setIinputOnline(true);
+    setIinputWho(2);
+    setIinputWhen(new Date());
+    setSelectedCategory("MeetUp");
+    setImageArray([]);
+  }
+
   //Components
   function FieldWhen() {
     return (
@@ -287,7 +273,7 @@ export default function Post({ route }) {
   function FieldWhere() {
     return (
       <View style={styles.inputBox}>
-        <Text style={styles.textBold}>Where{inputWhere}</Text>
+        <Text style={styles.textBold}>Where</Text>
 
         <View style={styles.inputOnlineWrapper}>
           <TouchableOpacity
@@ -377,23 +363,21 @@ export default function Post({ route }) {
     );
   }
 
-  function FieldDetails() {
-    return (
-      <View style={styles.inputBox}>
-        <Text style={styles.textBold}>Details</Text>
-        <TextInput
-          style={[styles.textInput, styles.longInput]}
-          // onChangeText={(e) => console.log(e)}
-          value={inputDetail}
-          onChangeText={(e) => {
-            setInputDetail(e);
-          }}
-          multiline={true}
-          numberOfLines={6}
-        />
-      </View>
-    );
-  }
+  // function FieldDetails() {
+  //   return (
+  //     <View style={styles.inputBox}>
+  //       <Text style={styles.textBold}>Details</Text>
+  //       <TextInput
+  //         style={[styles.textInput, styles.longInput]}
+  //         onChangeText={(e) => {
+  //           setInputDetail(e);
+  //         }}
+  //         multiline={true}
+  //         numberOfLines={6}
+  //       />
+  //     </View>
+  //   );
+  // }
 
   function FieldAttachment() {
     return (
@@ -446,7 +430,7 @@ export default function Post({ route }) {
             setSelectedCategory={setSelectedCategory}
           />
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Title{inputTitle}</Text>
+            <Text style={styles.textBold}>Title</Text>
             <TextInput
               style={styles.textInput}
               maxLength={60}
@@ -492,20 +476,26 @@ export default function Post({ route }) {
 
           <FieldWhere />
           <FieldWho />
-          <FieldDetails />
+          {/* <FieldDetails /> */}
+          <View style={styles.inputBox}>
+            <Text style={styles.textBold}>Details</Text>
+            <TextInput
+              style={[styles.textInput, styles.longInput]}
+              value={inputDetail}
+              onChangeText={(e) => {
+                setInputDetail(e);
+              }}
+              multiline={true}
+              numberOfLines={6}
+            />
+          </View>
           <FieldAttachment />
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
-              route.params?.data.id ? handleUpdate() : handlePost();
+              prevData.id ? handleUpdate() : handlePost();
             }}
           >
-            <Button
-              title="t사진"
-              onPress={() => {
-                console.log(imageArr);
-              }}
-            />
             <Text style={styles.postTxt}>Post</Text>
           </TouchableOpacity>
         </ScrollView>

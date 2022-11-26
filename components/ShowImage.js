@@ -19,7 +19,7 @@ export default function ShowImage({ showImageUri, setShowImageUri, imageArr }) {
           setShowImageUri(null);
         }}
       >
-        <Text>X</Text>
+        <Text style={styles.closeTxt}>X</Text>
       </TouchableOpacity>
       <View style={styles.thumbnailWrapper}>
         {imageArr?.map((el, i) => (
@@ -49,13 +49,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderWidth: 3,
-    borderColor: "#6685FF",
+    borderColor: "white",
+    backgroundColor: "#6685FF",
     borderRadius: 15,
     alignItems: "center",
     alignContent: "center",
     top: 20,
     right: 0,
-    backgroundColor: "white",
+  },
+  closeTxt: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
   },
   thumbnailWrapper: { flexDirection: "row", alignSelf: "center" },
   thumbnail: { width: 100, height: 100, margin: 2 },

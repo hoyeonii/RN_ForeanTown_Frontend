@@ -48,6 +48,10 @@ export default function Login() {
       })
       .then((data) => {
         console.log(data);
+        if (data.ERROR_MESSAGE?.length > 0) {
+          setSignInErrMessage(data.ERROR_MESSAGE[0].non_field_errors[0]);
+          return;
+        }
         storeData("accessToken", data.access_token);
         storeData("refreshToken", data.refresh_token);
         storeData("user", data.name);
@@ -108,7 +112,7 @@ export default function Login() {
               }}
             />
           </View>
-          <Text>{signInErrMessage}</Text>
+          <Text style={styles.warningText}>{signInErrMessage}</Text>
           <TouchableOpacity
             style={styles.postBtn}
             disabled={

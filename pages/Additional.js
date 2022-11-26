@@ -24,33 +24,31 @@ import { storeData } from "../components/HandleAsyncStorage";
 import * as ImagePicker from "expo-image-picker";
 import UserProfileImg from "../components/UserProfileImg";
 
-export default function Additional({ route }) {
+export default function Additional({
+  route: {
+    params: { userData },
+  },
+}) {
+  console.log(userData);
   const navigate = useNavigation();
   const { setUser, accessToken } = useContext(AuthContext);
-  // const [accessToken, setAccessToken] = useState([]);
-
   const [countryList, setCountryList] = useState([]);
   const [inputNickNameValue, setInputNickNameValue] = useState(
-    route.params?.userData.nickname || ""
+    userData.nickname || ""
   );
-  const [profileImg, setProfileImg] = useState("");
-  const [inputAgeValue, setInputAgeValue] = useState(
-    route.params?.userData.age || ""
-  );
+  const [profileImg, setProfileImg] = useState(userData.profile_img_url || "");
+  const [inputAgeValue, setInputAgeValue] = useState(userData.age || "");
   const [inputIsMaleValue, setInputIsMaleValue] = useState(
-    route.params
-      ? route.params?.userData.gender === "male"
-        ? true
-        : false
-      : true
+    userData ? (userData.gender === "male" ? true : false) : true
   );
   const [inputLocationValue, setInputLocationValue] = useState(
-    route.params?.userData.location || ""
+    userData.location || ""
   );
   const [inputCountryValue, setInputCountryValue] = useState(
-    route?.params?.userData?.country?.name || ""
+    userData.country || ""
   );
   const [ErrMessage, setErrMessage] = useState("");
+  const formData = new FormData();
 
   //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
   const offlineLocation = [
@@ -84,47 +82,69 @@ export default function Additional({ route }) {
   }
 
   const handleAdditionalInfo = () => {
+    formData.append("nickname", inputNickNameValue);
+    formData.append("age", inputAgeValue);
+    formData.append("is_male", inputIsMaleValue);
+    formData.append("location", inputLocationValue);
+    formData.append("country", inputCountryValue);
+    appendImage(profileImg);
+
     const requestOptions = {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
+        Accept: "*/*",
+        "Accept-Encoding": "gzip,deflate,br",
+        Connection: "keep-alive",
         Authorization: "Bearer " + accessToken,
       },
-      body: JSON.stringify({
-        nickname: inputNickNameValue,
-        age: inputAgeValue,
-        is_male: inputIsMaleValue,
-        location: inputLocationValue,
-        country: {
-          name: inputCountryValue,
-        },
-      }),
+      body: formData,
     };
     console.log(requestOptions);
     fetch(`${rootUrl}/users/myinfo`, requestOptions)
       .then((response) => {
-        console.log(response.status);
-        // response.status >= 400
-        //   ? set_login_failed("이메일 또는 비밀번호가 잘못되었습니다.")
-        //   : //   ? set_signup_failed("이메일 또는 비밀번호가 잘못되었습니다.")
-
         return response.json();
       })
       .then((data) => {
-        console.log("로그인 결과");
         console.log(data);
 
         data.ERROR_MESSAGE
           ? setErrMessage(data.ERROR_MESSAGE[0])
-          : navigate.push("MyPage");
+          : navigate.push("Main");
       })
       .catch((err) => {
         console.log("에러: " + err);
       });
   };
 
+  function appendImage(img) {
+    if (!img) return;
+
+    const filename = img.split("/").pop();
+
+    if (img.split("://")[0] === "https") {
+      //Picture already posted
+      formData.append("profile_image", {
+        uri: img,
+        name: filename,
+        type: "multipart/form-data",
+      });
+    } else {
+      //Picture newly posted
+      const match = /\.(\w+)$/.exec(filename ?? "");
+      const type = match ? `image/${match[1]}` : `image`;
+
+      formData.append("profile_image", {
+        uri: img,
+        name: filename,
+        type,
+      });
+    }
+  }
+
   function FieldAttachment() {
     async function pickImage() {
+      console.log("sif");
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
@@ -138,9 +158,16 @@ export default function Additional({ route }) {
     }
 
     return (
-      <TouchableOpacity style={styles.profileImg} onPress={pickImage}>
+      <TouchableOpacity
+        style={styles.profileImg}
+        onPress={() => {
+          console.log("riowf");
+          pickImage();
+        }}
+      >
         <UserProfileImg img={profileImg} />
-        {profileImg && <Image source={{ uri: profileImg }} />}
+
+        <View style={styles.profileImgTouchable} />
       </TouchableOpacity>
     );
   }
@@ -166,18 +193,17 @@ export default function Additional({ route }) {
                 }}
               />
             </View>
-            {/* <FieldAttachment style={styles.profileImg} /> */}
+            <FieldAttachment style={styles.profileImg} />
           </View>
 
           <View style={styles.inputBox}>
-            <Text style={styles.textBold}>Age{inputAgeValue}</Text>
+            <Text style={styles.textBold}>Age</Text>
             <TextInput
               style={styles.textInput}
               keyboardType="numeric"
               value={inputAgeValue}
               onChangeText={(e) => {
                 //입력값이 0으로 시작하지 않고, 두자리이며, 온점을 포함하지 않으면 적용
-                console.log(e);
                 if (e.indexOf(0) !== 0 && e.length < 3 && !e.includes("."))
                   setInputAgeValue(e);
               }}
@@ -344,6 +370,14 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     width: 70,
     height: 70,
+  },
+  profileImgTouchable: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    borderWidth: 1,
+    backgroundColor: "white",
+    opacity: 0,
   },
   textBold: {
     fontWeight: "bold",

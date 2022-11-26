@@ -82,7 +82,7 @@ export default function App() {
           {/* <Text>rif</Text> */}
           <ScrollView>
             <StatusBar style="auto" />
-            {roomsArr.map((item, i) => (
+            {roomsArr.reverse().map((item, i) => (
               <Card
                 key={i}
                 item={item}

@@ -59,27 +59,23 @@ function Footer() {
       </TouchableOpacity>
     );
   }
-  
+
   return (
     <View style={styles.container}>
-      <NavTab navTo="Post" icon="plus" name="Post" />
+      <NavTab navTo={userId ? "Post" : "Login"} icon="plus" name="Post" />
+
       <NavTab navTo="Main" icon="home" name="Main" />
-      {/* <NavTab
-        navTo={user ? ("MyPage", { state: userId }) : "Login"}
-        icon="user"
-        // name={user ? "user" : "nonpe"}
-        name={user ? user : "로그인"}
-      /> */}
+
       <TouchableOpacity
         style={styles.page}
         onPress={() => {
-          user
+          userId
             ? navigation.navigate("MyPage", { state: userId })
             : navigation.navigate("Login");
         }}
       >
         <Icon name={"user"} size={30} color="gray" />
-        <Text style={styles.pageText}>{user ? user + userId : "로그인"}</Text>
+        <Text style={styles.pageText}>{userId ? user + userId : "로그인"}</Text>
       </TouchableOpacity>
       <Button
         title="read"

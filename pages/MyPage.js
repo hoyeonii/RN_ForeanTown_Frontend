@@ -15,7 +15,12 @@ import { useNavigation } from "@react-navigation/core";
 import rootUrl from "../data/rootUrl";
 import { removeData } from "../components/HandleAsyncStorage";
 
-export default function MyPage({ route }) {
+export default function MyPage({
+  route,
+  route: {
+    params: { state },
+  },
+}) {
   myCreatedList;
   const [myCreatedList, setMyCreatedList] = useState([]);
   const [myJoinedList, setMyJoinedList] = useState([]);
@@ -29,7 +34,7 @@ export default function MyPage({ route }) {
     loadMyCreatedList();
     loadMyJoinedList();
     loadMyInfo();
-  }, []);
+  }, [route]);
 
   const requestOption = {
     method: "GET",
@@ -40,7 +45,7 @@ export default function MyPage({ route }) {
   };
 
   function loadMyCreatedList() {
-    fetch(`${rootUrl}/foreatown/gather-room/mylist/${route.params?.state}`)
+    fetch(`${rootUrl}/foreatown/gather-room/mylist/${state}`)
       .then((res) => res.json())
       .then((data) => {
         setMyCreatedList(data);
@@ -61,7 +66,7 @@ export default function MyPage({ route }) {
   }
 
   function loadMyInfo() {
-    fetch(`${rootUrl}/users/myinfo/${route.params?.state || userId}`)
+    fetch(`${rootUrl}/users/myinfo/${state || userId}`)
       .then((res) => res.json())
       .then((data) => {
         setmyInfo(data);
@@ -97,8 +102,8 @@ export default function MyPage({ route }) {
             <Text style={styles.userName}>{myInfo?.nickname}</Text>
             <Text style={styles.userAgeNSex}>
               {" "}
-              {myInfo?.age} {myInfo?.is_male ? "♂" : "♀"} |{" "}
-              {myInfo?.country?.name} | {myInfo?.location}
+              {myInfo?.age} {myInfo?.is_male ? "♂" : "♀"} | {myInfo?.country} |{" "}
+              {myInfo?.location}
             </Text>
             {myInfo.id !== userId ? (
               <TouchableOpacity onPress={() => navigation.push("Chat")}>
@@ -156,12 +161,14 @@ export default function MyPage({ route }) {
           <View style={styles.rooms}>
             <ScrollView style={styles.roomsScroll}>
               {showRoomof === "Created" &&
-                myCreatedList.map((el, i) => <Card item={el} key={i} />)}
+                myCreatedList
+                  .reverse()
+                  .map((el, i) => <Card item={el} key={i} />)}
               {showRoomof === "Joined" &&
                 myJoinedList.length > 0 &&
-                myJoinedList.map((el, i) => (
-                  <Card item={el.gather_room} key={i} />
-                ))}
+                myJoinedList
+                  .reverse()
+                  .map((el, i) => <Card item={el.gather_room} key={i} />)}
               <Button
                 title="Log Out"
                 onPress={() => {

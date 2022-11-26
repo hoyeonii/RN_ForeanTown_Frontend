@@ -164,7 +164,6 @@ function Detail({ route }) {
     )
       .then((res) => {
         console.log(res.status);
-        console.log(route.params.id);
         if (res.status < 400) Alert.alert("Unjoined");
         return res.json();
       })
@@ -336,7 +335,7 @@ const styles = StyleSheet.create({
 
     borderColor: "lightgray",
   },
-  attachmentWrapper: { flexDirection: "row" },
+  attachmentWrapper: { flexDirection: "row", marginTop: 70 },
   attachment: { margin: 2, width: 100, height: 100 },
 
   fontL: { fontSize: 20, fontWeight: "bold", paddingBottom: 10 },
