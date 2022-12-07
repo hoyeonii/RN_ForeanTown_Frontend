@@ -1,26 +1,18 @@
-import { StatusBar } from "expo-status-bar";
 import {
-  Image,
-  ScrollView,
   StyleSheet,
   Text,
-  Button,
   TouchableOpacity,
-  SafeAreaView,
   View,
   TextInput,
   ImageBackground,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useEffect, useState, useContext } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import Card from "../components/Card";
+
 import { useNavigation } from "@react-navigation/core";
 import { AuthContext } from "../App";
 import SelectDropdown from "react-native-select-dropdown";
 import rootUrl from "../data/rootUrl";
-import { storeData } from "../components/HandleAsyncStorage";
 import * as ImagePicker from "expo-image-picker";
 import UserProfileImg from "../components/UserProfileImg";
 
@@ -29,7 +21,6 @@ export default function Additional({
     params: { userData },
   },
 }) {
-  console.log(userData);
   const navigate = useNavigation();
   const { setUser, accessToken } = useContext(AuthContext);
   const [countryList, setCountryList] = useState([]);
@@ -50,7 +41,6 @@ export default function Additional({
   const [ErrMessage, setErrMessage] = useState("");
   const formData = new FormData();
 
-  //   const [passwordErrMessage, setPasswordErrMessage] = useState("");
   const offlineLocation = [
     "HongDae",
     "GangNam",
@@ -121,6 +111,8 @@ export default function Additional({
     if (!img) return;
 
     const filename = img.split("/").pop();
+    const match = /\.(\w+)$/.exec(filename ?? "");
+    const type = match ? `image/${match[1]}` : `image`;
 
     if (img.split("://")[0] === "https") {
       //Picture already posted
@@ -131,9 +123,6 @@ export default function Additional({
       });
     } else {
       //Picture newly posted
-      const match = /\.(\w+)$/.exec(filename ?? "");
-      const type = match ? `image/${match[1]}` : `image`;
-
       formData.append("profile_image", {
         uri: img,
         name: filename,
@@ -295,15 +284,15 @@ export default function Additional({
           {ErrMessage && <Text style={styles.warningText}>{ErrMessage}</Text>}
           <TouchableOpacity
             style={styles.postBtn}
-            // disabled={
-            //   inputNickNameValue &&
-            //   inputAgeValue &&
-            //   inputLocationValue &&
-            //   inputCountryValue &&
-            //   !ErrMessage
-            //     ? false
-            //     : true
-            // }
+            disabled={
+              inputNickNameValue &&
+              inputAgeValue &&
+              inputLocationValue &&
+              inputCountryValue &&
+              !ErrMessage
+                ? false
+                : true
+            }
             onPress={() => {
               handleAdditionalInfo();
               // navigate.push("Login");
@@ -311,15 +300,6 @@ export default function Additional({
           >
             <Text style={styles.postTxt}>Save</Text>
           </TouchableOpacity>
-
-          {/* <Button
-            title="storeData(현재 로그인버튼)"
-            onPress={() => {
-              storeData("token", "qwert12");
-              setUser("유저네임");
-            }}
-          />
-          <Button title="retrieveData" onPress={() => retrieveData("token")} /> */}
         </View>
       </View>
     </ImageBackground>
@@ -363,11 +343,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   profileImg: {
-    // alignItems: "center",
     marginTop: 20,
     marginRight: 10,
-    // padding: 10,
-    // borderRadius: 10,
     width: 70,
     height: 70,
   },

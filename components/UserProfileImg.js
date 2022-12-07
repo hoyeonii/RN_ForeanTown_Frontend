@@ -27,7 +27,6 @@ const UserProfileImg = ({ img, id }) => {
 };
 
 const styles = StyleSheet.create({
-  //   imgWrapper: { width: "100%", height: "100%" },
   profilePic: {
     borderWidth: 5,
 

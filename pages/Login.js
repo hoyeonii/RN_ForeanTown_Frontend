@@ -74,9 +74,8 @@ export default function Login() {
     if (regex.test(spaceRemoved)) {
       setEmailErrMessage("");
     } else {
-      setEmailErrMessage("이메일이 유효하지 않습니다");
+      setEmailErrMessage("Email form is invalid");
     }
-
     setInputEmailValue(spaceRemoved);
   }
 

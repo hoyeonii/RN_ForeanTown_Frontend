@@ -1,42 +1,42 @@
 import { StatusBar } from "expo-status-bar";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   ImageBackground,
   Text,
   Button,
-  TouchableOpacity,
   SafeAreaView,
+  TouchableOpacity,
   View,
-  Modal,
-  Pressable,
 } from "react-native";
 import { useEffect, useState } from "react";
 
 import Card from "../components/Card";
-import { useNavigation } from "@react-navigation/core";
-import FilterModal from "../components/FilterModal";
 import CategoryBar from "../components/CategoryBar";
-import { gather_rooms } from "../data/dummydata";
 import rootUrl from "../data/rootUrl";
 
 export default function App() {
   const [roomsArr, setRoomsArr] = useState([]);
+  const [pageNum, setPageNum] = useState(1);
+  const [isFetching, setFetching] = useState(false);
+  const [hasNextPage, setNextPage] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(1);
 
   const loadData = () =>
-    fetch(`${rootUrl}/foreatown/gather-room/list/${selectedCategory}`)
+    fetch(
+      `${rootUrl}/foreatown/gather-room/list/${selectedCategory}?page=${pageNum}`
+    )
       .then((res) => res.json())
       .then((data) => {
-        setRoomsArr(data);
-        // console.log("방별");
-        // console.log(data);
+        pageNum === 1
+          ? setRoomsArr(data.results)
+          : setRoomsArr([...roomsArr, ...data.results]);
+        setNextPage(data.next ? true : false);
       });
 
   useEffect(() => {
     loadData();
-  }, [selectedCategory]);
+  }, [selectedCategory, pageNum]);
 
   function getCategorybyID(id) {
     switch (id) {
@@ -51,17 +51,6 @@ export default function App() {
     }
   }
 
-  // function filteredPost(postArr) {
-  //   if (selectedCategory)
-  //     return postArr.filter(
-  //       (el) =>
-  //         getCategorybyID(el.gather_room_category_id).split(" ")[1] ===
-  //         selectedCategory
-  //     );
-
-  //   return postArr;
-  // }
-
   return (
     <ImageBackground
       source={require("../assets/bg3.jpg")}
@@ -73,26 +62,26 @@ export default function App() {
         <CategoryBar
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
+          setPageNum={setPageNum}
         />
-
-        {/* <View style={styles.banner}>
-        <Text>Banner</Text>
-      </View> */}
         <View style={styles.main}>
-          {/* <Text>rif</Text> */}
           <ScrollView>
             <StatusBar style="auto" />
-            {roomsArr.reverse().map((item, i) => (
-              <Card
-                key={i}
-                item={item}
-
-                //   onPress={() => navigation.push("Detail")}
-              />
+            {roomsArr.map((item, i) => (
+              <Card key={i} item={item} />
             ))}
           </ScrollView>
         </View>
-        {/* <Footer /> */}
+        {hasNextPage && (
+          <TouchableOpacity
+            onPress={() => {
+              console.log(roomsArr);
+              setPageNum((prev) => prev + 1);
+            }}
+          >
+            <Text style={styles.moreBtn}>More</Text>
+          </TouchableOpacity>
+        )}
       </SafeAreaView>
     </ImageBackground>
   );
@@ -128,5 +117,11 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
+  },
+  moreBtn: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 10,
   },
 });

@@ -28,12 +28,13 @@ export default function Post({
     params: { data: prevData },
   },
 }) {
+  // const prevData = route.params.data;
   // const [savedData, setSavedData] = useState({});
   // const [selectedCountry, setSelectedCountry] = useState("국가를 선택해주세요");
   const [selectedCategory, setSelectedCategory] = useState(
-    nametoCategoryId(prevData.gather_room_category.name) || null
+    nametoCategoryId(prevData?.gather_room_category.name) || null
   );
-  const [inputTitle, setInputTitle] = useState(prevData.subject || "");
+  const [inputTitle, setInputTitle] = useState(prevData?.subject || "");
   const [inputWhen, setInputWhen] = useState(
     prevData ? new Date(prevData.date_time) : new Date()
   );
@@ -42,11 +43,11 @@ export default function Post({
   const [inputOnline, setInputOnline] = useState(
     prevData ? prevData.is_online : true
   );
-  const [inputWhere, setInputWhere] = useState(prevData.address || null);
-  const [inputWho, setInputWho] = useState(prevData.user_limit || 2);
-  const [inputDetail, setInputDetail] = useState(prevData.content || "");
+  const [inputWhere, setInputWhere] = useState(prevData?.address || null);
+  const [inputWho, setInputWho] = useState(prevData?.user_limit || 2);
+  const [inputDetail, setInputDetail] = useState(prevData?.content || "");
   const [imageArr, setImageArr] = useState(
-    prevData.gather_room_images.map((el) => el.img_url) || []
+    prevData?.gather_room_images.map((el) => el.img_url) || []
   );
 
   const navigate = useNavigation();
@@ -493,7 +494,7 @@ export default function Post({
           <TouchableOpacity
             style={styles.postBtn}
             onPress={() => {
-              prevData.id ? handleUpdate() : handlePost();
+              prevData?.id ? handleUpdate() : handlePost();
             }}
           >
             <Text style={styles.postTxt}>Post</Text>

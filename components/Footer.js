@@ -13,7 +13,6 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/core";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../App";
-import AppText from "./AppText";
 
 function Footer() {
   const { user, userId, setUser, accessToken } = useContext(AuthContext);
@@ -55,14 +54,25 @@ function Footer() {
         onPress={() => navigation.navigate(navTo)}
       >
         <Icon name={icon} size={30} color="gray" />
-        <AppText style={styles.pageText}>{name}</AppText>
+        <Text style={styles.pageText}>{name}</Text>
       </TouchableOpacity>
     );
   }
 
   return (
     <View style={styles.container}>
-      <NavTab navTo={userId ? "Post" : "Login"} icon="plus" name="Post" />
+      {/* <NavTab navTo={userId ? "Post" : "Login"} icon="plus" name="Post" /> */}
+      <TouchableOpacity
+        style={styles.page}
+        onPress={() => {
+          userId
+            ? navigation.navigate("Post", { data: null })
+            : navigation.navigate("Login");
+        }}
+      >
+        <Icon name={"plus"} size={30} color="gray" />
+        <Text style={styles.pageText}>Post</Text>
+      </TouchableOpacity>
 
       <NavTab navTo="Main" icon="home" name="Main" />
 

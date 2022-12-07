@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
-function CategoryBar({ selectedCategory, setSelectedCategory }) {
+function CategoryBar({ selectedCategory, setSelectedCategory, setPageNum }) {
   const category = ["MeetUp", "Dating", "Language", "Hiring"];
 
   return (
@@ -14,6 +14,7 @@ function CategoryBar({ selectedCategory, setSelectedCategory }) {
             } else {
               setSelectedCategory(i + 1);
             }
+            setPageNum && setPageNum(1);
           }}
           style={styles.category}
         >

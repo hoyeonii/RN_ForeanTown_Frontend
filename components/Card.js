@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/core";
 
 function Card({ item }) {
   const navigation = useNavigation();
+  // console.log(item);
 
   function getCategorybyID(id) {
     switch (id) {
