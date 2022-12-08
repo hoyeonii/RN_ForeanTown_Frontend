@@ -23,8 +23,14 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(1);
 
   const loadData = () =>
+    //카테고리별로
+    //     fetch(
+    //   `${rootUrl}/foreatown/gather-room/list/${selectedCategory}?page=${pageNum}`
+    // )
+
+    //최신순
     fetch(
-      `${rootUrl}/foreatown/gather-room/list/${selectedCategory}?page=${pageNum}`
+      `${rootUrl}/foreatown/gather-room/list?order_by=latest&page=${pageNum}`
     )
       .then((res) => res.json())
       .then((data) => {
